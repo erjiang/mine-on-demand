@@ -122,17 +122,6 @@ def launch_minecraft_server():
     print("Attaching world volume")
     attach_volume(instance)
 
-    print("Waiting for minecraft to start")
-    server = MinecraftServer(IP_ADDR, 25565)
-    # repeatedly check the server status until it responds
-    for i in range(5):
-        try:
-            status = server.status()
-        except (ConnectionRefusedError, socket.timeout):
-            # expected, just wait for next time
-            time.sleep(2)
-        break
-
     print("Done")
     return True
 
