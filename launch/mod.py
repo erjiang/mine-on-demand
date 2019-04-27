@@ -3,7 +3,7 @@ import os
 import socket
 from functools import wraps
 
-from flask import Flask, jsonify, request, Response, abort
+from flask import Flask, jsonify, request, Response, abort, send_from_directory
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from mcstatus import MinecraftServer
