@@ -45,11 +45,6 @@ def auth_required(func):
 def homepage():
     return app.send_static_file('index.html')
 
-@app.route("/dev/<path:filename>")
-def static_get_hack(filename):
-    """This lets us run locally with PUBLIC_URL=/dev/"""
-    return send_from_directory('static', filename)
-
 @app.route("/<path:filename>")
 def static_get(filename):
     return send_from_directory('static', filename)
