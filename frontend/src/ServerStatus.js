@@ -60,7 +60,13 @@ class ServerStatus extends React.Component {
 
     if (response.status === 200) {
       // TODO: This isn't quite right
-      this.props.onError('Server is started. Please check.');
+      setTimeout(() => {
+        alert('The server thinks the server has started.');
+        this.setState({
+          hasChecked: false,
+        });
+        this.checkStatus();
+      }, 5000);
     } else {
       this.props.onError('Server failed to launch');
       console.table(response);
