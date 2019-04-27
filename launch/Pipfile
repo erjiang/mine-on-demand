@@ -7,6 +7,8 @@ verify_ssl = true
 
 [packages]
 boto3 = "*"
+mcstatus = "*"
+flask = "*"
 
 [requires]
 python_version = "3.7"

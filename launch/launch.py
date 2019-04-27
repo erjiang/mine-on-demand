@@ -7,7 +7,7 @@ SUBNET_ID = os.environ['SUBNET_ID']
 KEY_NAME = os.environ['KEY_NAME']
 WORLD_VOLUME = os.environ['WORLD_VOLUME']
 
-IP_ADDR = os.environ['IP_ADDR']
+IP_ADDR = os.environ['SERVER_IP']
 
 REGION_NAME = os.environ['REGION_NAME']
 
