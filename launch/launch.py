@@ -9,40 +9,42 @@ WORLD_VOLUME = 'vol-0e6018d54a535e733'
 
 ec2 = boto3.resource('ec2', region_name='us-west-1')
 
-#instances = ec2.create_instances(
-#    MinCount=1,
-#    MaxCount=1,
-##    BlockDeviceMappings=[
-##        {
-##            'Ebs': {
-##                'SnapshotId': 'snap-0b95f8c0766c1aabf',
-##                'VolumeSize': 8,
-##                'DeleteOnTermination': True,
-##                'VolumeType': 'gp2',
-##                'Encrypted': False
-##            },
-##        },
-##    ],
-#    ImageId=AMI,
-#    InstanceType='t3.medium',
-#    KeyName=KEY_NAME,
-#    SecurityGroupIds=[SG],
-#    SubnetId=SUBNET_ID,
-#    DryRun=True,
-#    EbsOptimized=True,
-#)
+instances = ec2.create_instances(
+    MinCount=1,
+    MaxCount=1,
+#    BlockDeviceMappings=[
+#        {
+#            'Ebs': {
+#                'SnapshotId': 'snap-0b95f8c0766c1aabf',
+#                'VolumeSize': 8,
+#                'DeleteOnTermination': True,
+#                'VolumeType': 'gp2',
+#                'Encrypted': False
+#            },
+#        },
+#    ],
+    ImageId=AMI,
+    InstanceType='t3.medium',
+    KeyName=KEY_NAME,
+    SecurityGroupIds=[SG],
+    SubnetId=SUBNET_ID,
+    DryRun=False,
+    EbsOptimized=True,
+)
 
-#instance = instances[0]
-instance = ec2.Instance('i-01e25792a5174bc7a')
+instance = instances[0]
 
 print("Waiting for instance to start running")
 instance.wait_until_running()
 
+print("Attaching world volume")
 instance.attach_volume(
     Device='/dev/sdf',
     VolumeId=WORLD_VOLUME,
     DryRun=False
 )
+
+print("Done")
 
 #response = client.request_spot_instances(
 #    DryRun=False,
