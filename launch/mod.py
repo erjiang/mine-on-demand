@@ -45,6 +45,9 @@ def auth_required(func):
 def homepage():
     return app.send_static_file('static/index.html')
 
+@app.route("/<path:filename>")
+def static_get(filename):
+    return send_from_directory('static', filename)
 
 @app.route("/serverstatus.json")
 @auth_required
