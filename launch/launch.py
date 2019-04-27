@@ -1,5 +1,9 @@
-import boto3
 import os
+import socket
+import time
+
+import boto3
+from mcstatus import MinecraftServer
 
 AMI = os.environ['AMI_ID']
 SG_ID = os.environ['SG_ID']
@@ -26,7 +30,7 @@ def launch_instances():
                 }
             ],
             'SubnetId': SUBNET_ID,
-            'Groups': [SG],
+            'Groups': [SG_ID],
         }],
     #    BlockDeviceMappings=[
     #        {
@@ -64,6 +68,7 @@ def attach_volume(instance):
 
 def launch_minecraft_server():
     instances = launch_instances()
+    yield "Launching instance..."
     instance = instances[0]
 
     yield "Waiting for instance to start running"
@@ -71,6 +76,17 @@ def launch_minecraft_server():
 
     yield "Attaching world volume"
     attach_volume(instance)
+
+    yield "Waiting for minecraft to start"
+    server = MinecraftServer(IP_ADDR, 25565)
+    # repeatedly check the server status until it responds
+    for i in range(5):
+        try:
+            status = server.status()
+        except (ConnectionRefusedError, socket.timeout):
+            # expected, just wait for next time
+            time.sleep(2)
+        break
 
     yield "Done"
 
