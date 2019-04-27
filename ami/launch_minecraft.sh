@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # is there a better way to tell what the second EBS volume's device name is?
-DEVICE_NAME=""
-until [[ -z "$DEVICE_NAME" ]]; do
+DEVICE_NAME=`dmesg | grep "BTRFS: device" | tail -1 | grep '/dev/.*$' -o`
+while [[ -z "$DEVICE_NAME" ]]; do
     echo "Looking for BTRFS device"
     DEVICE_NAME=`dmesg | grep "BTRFS: device" | tail -1 | grep '/dev/.*$' -o`
     sleep 5
