@@ -1,0 +1,45 @@
+{
+    "variables": {
+        "aws_access_key": "",
+        "aws_secret_key": ""
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",
+        "region": "us-west-1",
+        "source_ami_filter": {
+            "filters": {
+                "virtualization-type": "hvm",
+                "name": "ubuntu/images/*ubuntu-bionic-18.04-amd64-server-*",
+                "root-device-type": "ebs"
+            },
+            "owners": ["099720109477"],
+            "most_recent": true
+        },
+        "instance_type": "t3.small",
+        "ssh_username": "ubuntu",
+        "ami_name": "mctest {{timestamp}}"
+    }],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "mc-supervisor.conf",
+            "destination": "/home/ubuntu/mc-supervisor.conf"
+        },
+        {
+            "type": "file",
+            "source": "launch_minecraft.sh",
+            "destination": "/home/ubuntu/launch_minecraft.sh"
+        },
+        {
+            "type": "shell",
+            "script": "./install_minecraft.sh"
+        },
+        {
+            "type": "file",
+            "source": "server.txt",
+            "destination": "/home/ubuntu/server.txt"
+        }
+    ]
+}
