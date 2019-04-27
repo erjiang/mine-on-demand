@@ -1,4 +1,4 @@
-import GoogleLogin from 'react-google-login';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import React from 'react';
 import './App.css';
 import ServerStatus from './ServerStatus';
@@ -14,7 +14,7 @@ class App extends React.Component {
 
   responseGoogle(response) {
     if (response.error) {
-      console.log("Error");
+      this.onError("Error logging in to Google.");
     } else if (response.profileObj) {
       this.setState({
         signedIn: true,
@@ -29,11 +29,28 @@ class App extends React.Component {
     this.setState({ wilted: true });
   }
 
+  onLogoutSuccess() {
+    if (this.state.wilted) {
+      alert("Since you were already wilted, logging in won't do any good.")
+    }
+    this.setState({
+      signedIn: false,
+    });
+  }
+
   render() {
     let loginForm = null;
     if (this.state.signedIn) {
+      const logoutButton = (
+        <div className="loginButton">
+          <GoogleLogout
+            buttonText="Logout"
+            onLogoutSuccess={() => this.onLogoutSuccess()}
+          />
+        </div>
+      );
       if (this.state.wilted) {
-        loginForm = null;
+        loginForm = logoutButton;
       } else {
         loginForm = (
           <div>
@@ -42,6 +59,7 @@ class App extends React.Component {
               googleIDToken={this.state.googleIDToken}
               onError={(msg) => this.onError(msg)}
             />
+            {logoutButton}
           </div>
         );
       }
