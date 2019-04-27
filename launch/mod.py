@@ -1,4 +1,5 @@
 import os
+import socket
 
 from flask import Flask, jsonify
 from mcstatus import MinecraftServer
@@ -19,8 +20,8 @@ def get_server_status():
         status = server.status(retries=2)
         is_online = True
         players = status.players.online
-        version = status.software.version
-    except:
+        version = status.version.name
+    except (ConnectionRefusedError, socket.timeout):
         is_online = False
         players = 0
         version = None
