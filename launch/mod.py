@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, jsonify
 from mcstatus import MinecraftServer
 
 app = Flask(__name__)
