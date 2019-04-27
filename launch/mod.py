@@ -49,6 +49,10 @@ def homepage():
 def static_get(filename):
     return send_from_directory('static', filename)
 
+@app.route("/dev/<path:filename>")
+def static_get_hack(filename):
+    return send_from_directory('static', filename)
+
 @app.route("/serverstatus.json")
 @auth_required
 def get_server_status():
