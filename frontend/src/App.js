@@ -53,13 +53,14 @@ class App extends React.Component {
           onSuccess={(response) => this.responseGoogle(response)}
           onFailure={(response) => this.responseGoogle(response)}
           cookiePolicy={"single_host_origin"}
+          isSignedIn={true}
         />
       );
     }
     return (
       <div className="App">
         <header className="App-header">
-          <span className="minerEmoji" role="img" aria-label="Miner">{this.state.wilted ? "🥀" : "👷"}</span>
+          <span className="minerEmoji" role="img" aria-label="Miner">{this.state.wilted ? "🥀" : "👷‍♀️"}</span>
           Mine on Demand
         </header>
         {loginForm}
