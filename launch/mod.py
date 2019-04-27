@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from mcstatus import MinecraftServer
 
@@ -27,3 +29,8 @@ def get_server_status():
         players=players,
         version=version
     )
+
+@app.route("/start_server", methods=['POST'])
+#@auth_required
+def start_server():
+
