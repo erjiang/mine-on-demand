@@ -10,7 +10,7 @@ from mcstatus import MinecraftServer
 
 from launch import launch_minecraft_server
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
 SERVER_IP = os.environ['SERVER_IP']
 USER_WHITELIST = json.loads(os.environ['USER_WHITELIST'])
@@ -29,7 +29,7 @@ def auth_required(func):
             raise ValueError('Wrong issuer.')
         if "email" not in idinfo:
             abort(401)
-        if idinfo['email_verified'] != "true":
+        if not idinfo['email_verified']:
             print("Email is not verified. Not accepting it.")
             abort(403)
 
@@ -43,7 +43,12 @@ def auth_required(func):
 
 @app.route("/")
 def homepage():
-    return app.send_static_file('static/index.html')
+    return app.send_static_file('index.html')
+
+@app.route("/dev/<path:filename>")
+def static_get_hack(filename):
+    """This lets us run locally with PUBLIC_URL=/dev/"""
+    return send_from_directory('static', filename)
 
 @app.route("/<path:filename>")
 def static_get(filename):
