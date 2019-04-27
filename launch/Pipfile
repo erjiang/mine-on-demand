@@ -9,6 +9,8 @@ verify_ssl = true
 boto3 = "*"
 mcstatus = "*"
 flask = "*"
+google-api-python-client = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"

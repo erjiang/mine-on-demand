@@ -62,14 +62,19 @@ def attach_volume(instance):
     )
 
 
-if __name__ == '__main__':
+def launch_minecraft_server():
     instances = launch_instances()
     instance = instances[0]
 
-    print("Waiting for instance to start running")
+    yield "Waiting for instance to start running"
     instance.wait_until_running()
 
-    print("Attaching world volume")
+    yield "Attaching world volume"
     attach_volume(instance)
 
-    print("Done")
+    yield "Done"
+
+
+if __name__ == '__main__':
+    for x in launch_minecraft_server():
+        print(x)
