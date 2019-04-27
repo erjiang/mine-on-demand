@@ -33,4 +33,4 @@ def get_server_status():
 @app.route("/start_server", methods=['POST'])
 #@auth_required
 def start_server():
-
+    pass
