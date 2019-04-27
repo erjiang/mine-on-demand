@@ -1,80 +1,75 @@
 import boto3
+import os
 
-AMI = 'ami-00af8e72f7a286b9e'
-SG = 'sg-0c60ae91e65a479dd'
-SUBNET_ID = 'subnet-3830357e'
-SPOT_PRICE = '0.016'
-KEY_NAME = 'eric-west-1'
-WORLD_VOLUME = 'vol-0e6018d54a535e733'
+AMI = os.environ['AMI_ID']
+SG_ID = os.environ['SG_ID']
+SUBNET_ID = os.environ['SUBNET_ID']
+KEY_NAME = os.environ['KEY_NAME']
+WORLD_VOLUME = os.environ['WORLD_VOLUME']
 
-ec2 = boto3.resource('ec2', region_name='us-west-1')
+IP_ADDR = os.environ['IP_ADDR']
 
-instances = ec2.create_instances(
-    MinCount=1,
-    MaxCount=1,
-#    BlockDeviceMappings=[
-#        {
-#            'Ebs': {
-#                'SnapshotId': 'snap-0b95f8c0766c1aabf',
-#                'VolumeSize': 8,
-#                'DeleteOnTermination': True,
-#                'VolumeType': 'gp2',
-#                'Encrypted': False
-#            },
-#        },
-#    ],
-    ImageId=AMI,
-    InstanceType='t3.medium',
-    KeyName=KEY_NAME,
-    SecurityGroupIds=[SG],
-    SubnetId=SUBNET_ID,
-    DryRun=False,
-    EbsOptimized=True,
-)
+REGION_NAME = os.environ['REGION_NAME']
 
-instance = instances[0]
+ec2 = boto3.resource('ec2', region_name=REGION_NAME)
 
-print("Waiting for instance to start running")
-instance.wait_until_running()
 
-print("Attaching world volume")
-instance.attach_volume(
-    Device='/dev/sdf',
-    VolumeId=WORLD_VOLUME,
-    DryRun=False
-)
+def launch_instances():
+    instances = ec2.create_instances(
+        MinCount=1,
+        MaxCount=1,
+        NetworkInterfaces=[{
+            'DeviceIndex': 0,
+            'Ipv6Addresses': [
+                {
+                    'Ipv6Address': IP_ADDR
+                }
+            ],
+            'SubnetId': SUBNET_ID,
+            'Groups': [SG],
+        }],
+    #    BlockDeviceMappings=[
+    #        {
+    #            'Ebs': {
+    #                'SnapshotId': 'snap-0b95f8c0766c1aabf',
+    #                'VolumeSize': 8,
+    #                'DeleteOnTermination': True,
+    #                'VolumeType': 'gp2',
+    #                'Encrypted': False
+    #            },
+    #        },
+    #    ],
+        TagSpecifications=[{
+            'ResourceType': 'instance',
+            'Tags': [{
+                    'Key': 'mine-on-demand-managed',
+                    'Value': 'true'
+            }]
+        }],
+        ImageId=AMI,
+        InstanceType='t3.medium',
+        KeyName=KEY_NAME,
+        DryRun=False,
+        EbsOptimized=True,
+    )
+    return instances
 
-print("Done")
 
-#response = client.request_spot_instances(
-#    DryRun=False,
-#    SpotPrice=SPOT_PRICE,
-#    ClientToken='string',
-#    InstanceCount=1,
-#    Type='one-time',
-#    LaunchSpecification={
-#        'ImageId': AMI,
-#        'KeyName': 'eric-west-1.pem',
-#        'InstanceType': 't3.medium',
-#        'Placement': {
-#            'AvailabilityZone': 'us-west-1a',
-#        },
-#        'BlockDeviceMappings': [
-#            {
-#                'Ebs': {
-#                    'SnapshotId': 'snap-0b95f8c0766c1aabf',
-#                    'VolumeSize': 8,
-#                    'DeleteOnTermination': True,
-#                    'VolumeType': 'gp2',
-#                    'Encrypted': False
-#                },
-#            },
-#        ],
-#        'EbsOptimized': True,
-#        'Monitoring': {
-#            'Enabled': True
-#        },
-#        'SecurityGroupIds': [ SG ]
-#    }
-#)
-#
+def attach_volume(instance):
+    instance.attach_volume(
+        Device='/dev/sdf',
+        VolumeId=WORLD_VOLUME
+    )
+
+
+if __name__ == '__main__':
+    instances = launch_instances()
+    instance = instances[0]
+
+    print("Waiting for instance to start running")
+    instance.wait_until_running()
+
+    print("Attaching world volume")
+    attach_volume(instance)
+
+    print("Done")
