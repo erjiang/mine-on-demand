@@ -17,7 +17,7 @@
             "owners": ["099720109477"],
             "most_recent": true
         },
-        "instance_type": "t3.small",
+        "instance_type": "t3.micro",
         "ssh_username": "ubuntu",
         "ami_name": "mctest {{timestamp}}"
     }],
@@ -38,8 +38,8 @@
         },
         {
             "type": "file",
-            "source": "server.txt",
-            "destination": "/home/ubuntu/server.txt"
+            "source": "server.properties",
+            "destination": "/home/ubuntu/server.properties"
         }
     ]
 }
