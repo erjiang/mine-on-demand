@@ -8,6 +8,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       signedIn: false,
+      wilted: false,
     };
   }
 
@@ -23,17 +24,27 @@ class App extends React.Component {
     }
   }
 
+  onError(msg) {
+    alert(msg);
+    this.setState({ wilted: true });
+  }
+
   render() {
     let loginForm = null;
     if (this.state.signedIn) {
-      loginForm = (
-        <div>
-          <p>You are signed in, {this.state.profileObj.givenName}.</p>
-          <ServerStatus
-            googleIDToken={this.state.googleIDToken}
-          />
-        </div>
-      );
+      if (this.state.wilted) {
+        loginForm = null;
+      } else {
+        loginForm = (
+          <div>
+            <p>You are signed in, {this.state.profileObj.givenName}.</p>
+            <ServerStatus
+              googleIDToken={this.state.googleIDToken}
+              onError={(msg) => this.onError(msg)}
+            />
+          </div>
+        );
+      }
     } else {
       loginForm = (
         <GoogleLogin
@@ -48,7 +59,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <span className="minerEmoji" role="img" aria-label="Miner">👷</span>
+          <span className="minerEmoji" role="img" aria-label="Miner">{this.state.wilted ? "🥀" : "👷"}</span>
           Mine on Demand
         </header>
         {loginForm}

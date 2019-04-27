@@ -28,15 +28,21 @@ class ServerStatus extends React.Component {
     });
 
     if (response.status === 200) {
-      const json = await response.json();
-      this.setState({
-        hasChecked: true,
-        serverOnline: json.online,
-        numPlayers: json.players,
-        serverVersion: json.version,
-      });
+      try {
+        const json = await response.json();
+        this.setState({
+          hasChecked: true,
+          serverOnline: json.online,
+          numPlayers: json.players,
+          serverVersion: json.version,
+        });
+      } catch (e) {
+        this.props.onError("Unable to check the status of server: " + e.message);
+        return;
+      }
     } else {
       console.table(response);
+      this.props.onError("Received a non-200 response. See console.");
     }
   }
 
@@ -54,9 +60,9 @@ class ServerStatus extends React.Component {
 
     if (response.status === 200) {
       // TODO: This isn't quite right
-      alert('Server is started. Please check.');
+      this.props.onError('Server is started. Please check.');
     } else {
-      alert('Server failed to launch');
+      this.props.onError('Server failed to launch');
       console.table(response);
     }
   }
