@@ -101,28 +101,28 @@ def attach_volume(instance):
 
 
 def launch_minecraft_server():
-    yield "Checking if server is already running"
+    """Returns True if successful, False if not or server is already running."""
+    print("Checking if server is already running")
     i = get_active_minecraft_server()
     if i:
-        yield "Server %s seems to be already running" % (i.instance_id,)
+        return "Server %s seems to be already running" % (i.instance_id,)
         return
 
-    yield "Checking if world volume is free"
+    print("Checking if world volume is free")
     if not is_volume_free(WORLD_VOLUME):
-        yield "World volume is not free. Server may already be running."
-        return
+        return "World volume is not free. Server may already be running."
 
     instances = launch_instances()
-    yield "Launching instance..."
+    print("Launching instance...")
     instance = instances[0]
 
-    yield "Waiting for instance to start running"
+    print("Waiting for instance to start running")
     instance.wait_until_running()
 
-    yield "Attaching world volume"
+    print("Attaching world volume")
     attach_volume(instance)
 
-    yield "Waiting for minecraft to start"
+    print("Waiting for minecraft to start")
     server = MinecraftServer(IP_ADDR, 25565)
     # repeatedly check the server status until it responds
     for i in range(5):
@@ -133,7 +133,8 @@ def launch_minecraft_server():
             time.sleep(2)
         break
 
-    yield "Done"
+    print("Done")
+    return True
 
 
 if __name__ == '__main__':

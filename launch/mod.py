@@ -81,4 +81,12 @@ def get_server_status():
 @app.route("/start_server", methods=['POST'])
 @auth_required
 def start_server():
-    return Response(launch_minecraft_server(), mimetype='text/plain')
+    try:
+        results = launch_minecraft_server()
+    except Exception as e:
+        return Response(str(e), status=500, mimetype='text/plain')
+    if results == True:
+        return Response("Server started", mimetype='text/plain')
+    elif isinstance(results, str):
+        print(results)
+        return Response(results, status=409, mimetype='text/plain')
