@@ -56,10 +56,6 @@ provider:
 #    - exclude-me.py
 #    - exclude-me-dir/**
 
-functions:
-  hello:
-    handler: handler.hello
-
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -109,3 +105,27 @@ functions:
 plugins:
   - serverless-wsgi
   - serverless-python-requirements
+
+custom:
+  wsgi:
+    app: mod.app
+    packRequirements: false
+
+functions:
+  app:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+
+
+environment:
+  AMI_ID: ami-123
+  SG_ID: sg-123
+  SUBNET_ID: subnet-123
+  KEY_NAME: west-1-personal
+  WORLD_VOLUME: vol-123
+  SERVER_IP: "2600::::"
+  REGION_NAME: us-west-1
+  USER_WHITELIST: '["foobar@gmail.com","foobaz@gmail.com"]'
+  GOOGLE_CLIENT_ID: 123456789012-blahblahblah.apps.googleusercontent.com
