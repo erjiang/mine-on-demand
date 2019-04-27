@@ -37,7 +37,7 @@ class ServerStatus extends React.Component {
           serverVersion: json.version,
         });
       } catch (e) {
-        this.props.onError("Unable to check the status of server: " + e.message);
+        this.props.onError("Unable to check the status of the server: " + e.message);
         return;
       }
     } else {
@@ -61,14 +61,23 @@ class ServerStatus extends React.Component {
     if (response.status === 200) {
       // TODO: This isn't quite right
       setTimeout(() => {
-        alert('The server thinks the server has started.');
+        console.log("The server thinks the server has started.");
+        this.setState({
+          hasChecked: false,
+        });
+        this.checkStatus();
+      }, 5000);
+    } else if (response.status === 409) {
+      // The server was already running
+      console.log("Received 409: Server was already running.");
+      setTimeout(() => {
         this.setState({
           hasChecked: false,
         });
         this.checkStatus();
       }, 5000);
     } else {
-      this.props.onError('Server failed to launch');
+      this.props.onError("Unfortunately, the server failed to launch: " + response.body);
       console.table(response);
     }
   }

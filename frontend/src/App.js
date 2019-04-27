@@ -8,7 +8,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       signedIn: false,
-      wilted: false,
+      isWilted: false,
     };
   }
 
@@ -26,11 +26,11 @@ class App extends React.Component {
 
   onError(msg) {
     alert(msg);
-    this.setState({ wilted: true });
+    this.setState({ isWilted: true });
   }
 
   onLogoutSuccess() {
-    if (this.state.wilted) {
+    if (this.state.isWilted) {
       alert("Since you were already wilted, logging in won't do any good.")
     }
     this.setState({
@@ -46,10 +46,11 @@ class App extends React.Component {
           <GoogleLogout
             buttonText="Logout"
             onLogoutSuccess={() => this.onLogoutSuccess()}
+            icon={false}
           />
         </div>
       );
-      if (this.state.wilted) {
+      if (this.state.isWilted) {
         loginForm = logoutButton;
       } else {
         loginForm = (
@@ -78,7 +79,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <span className="minerEmoji" role="img" aria-label="Miner">{this.state.wilted ? "🥀" : "👷‍♀️"}</span>
+          <span className="minerEmoji" role="img" aria-label="Miner">{this.state.isWilted ? "🥀" : "👷"}</span>
           Mine on Demand
         </header>
         {loginForm}
