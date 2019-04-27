@@ -1,16 +1,15 @@
-body {
-  background-color: #282c34;
-  color: #fff;
-}
-
 .App {
   text-align: center;
 }
 
 .App-header {
-  height: 100px;
   font-size: 28px;
-  padding-top: 40px;
+  margin: 40px 0;
+}
+
+.minerEmoji {
+  display: block;
+  font-size: 80px;
 }
 
 .buttonBar {

@@ -48,7 +48,8 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          Minestart
+          <span className="minerEmoji" role="img" aria-label="Miner">👷</span>
+          Mine on Demand
         </header>
         {loginForm}
       </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 
-const STATUS_ENDPOINT = "http://localhost:5000/serverstatus.json";
-const START_ENDPOINT = "http://localhost:5000/start_server";
+const STATUS_ENDPOINT = "serverstatus.json";
+const START_ENDPOINT = "start_server";
 
 class ServerStatus extends React.Component {
   constructor(props) {
@@ -70,7 +70,6 @@ class ServerStatus extends React.Component {
   }
 
   render() {
-    let status = this.state.serverOnline ? "online" : "offline";
     // Currently checking status
     if (!this.state.hasChecked) {
       return (
