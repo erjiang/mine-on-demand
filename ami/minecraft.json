@@ -23,9 +23,28 @@
     }],
     "provisioners": [
         {
+            "type": "shell",
+            "inline": ["mkdir /home/ubuntu/watchdog"]
+        },
+        {
             "type": "file",
             "source": "mc-supervisor.conf",
             "destination": "/home/ubuntu/mc-supervisor.conf"
+        },
+        {
+            "type": "file",
+            "source": "watchdog.conf",
+            "destination": "/home/ubuntu/watchdog.conf"
+        },
+        {
+            "type": "file",
+            "source": "watchdog/watchdog.py",
+            "destination": "/home/ubuntu/watchdog/watchdog.py"
+        },
+        {
+            "type": "file",
+            "source": "watchdog/requirements.txt",
+            "destination": "/home/ubuntu/watchdog/requirements.txt"
         },
         {
             "type": "file",
