@@ -16,6 +16,8 @@ files in this repo.
 
 ## Building the AMI
 
+You will need to get your AWS Access Key and Secret Key from the AWS console.
+
 1. Install HashiCorp Packer.
 1. Go into the `ami/` directory.
 1. Run `packer build minecraft.json`.
