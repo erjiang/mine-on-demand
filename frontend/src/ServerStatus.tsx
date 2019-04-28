@@ -82,7 +82,7 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
       this.props.onError("Tried to schedule new wait timeout but we're not waiting.");
       return;
     }
-    if (new Date().getTime() - this.state.waitStartedAt.getTime() > 60) {
+    if (new Date().getTime() - this.state.waitStartedAt.getTime() > 60000) {
       // It's been more than a minute
       this.props.onError("We've been waiting a while. Something probably went wrong.");
       return;
