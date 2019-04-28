@@ -1,0 +1,5 @@
+Click==7.0
+dnspython==1.15.0
+dnspython3==1.15.0
+mcstatus==2.2
+six==1.12.0

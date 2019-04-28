@@ -16,7 +16,7 @@ sudo apt update
 
 sudo apt upgrade
 
-sudo apt -y install openjdk-8-jre-headless supervisor
+sudo apt -y install openjdk-8-jre-headless supervisor python-virtualenv python-pip
 
 sudo apt clean
 
@@ -31,5 +31,13 @@ mkdir /home/ubuntu/world
 # move the supervisor conf file that packer previously uploaded to the right
 # place, since the packer file provisioner doesn't have permissions to do it
 sudo cp /home/ubuntu/mc-supervisor.conf /etc/supervisor/conf.d/
+sudo cp /home/ubuntu/watchdog.conf /etc/supervisor/conf.d/
 
+# set up the watchdog
+virtualenv -p python3 /home/ubuntu/watchdog/
+. /home/ubuntu/watchdog/bin/activate
+pip install -r /home/ubuntu/watchdog/requirements.txt
+deactivate
+
+# make the launcher executable
 chmod +x /home/ubuntu/launch_minecraft.sh
