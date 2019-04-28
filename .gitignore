@@ -1,1 +1,8 @@
 *~
+ami/watchdog/bin
+ami/watchdog/lib
+ami/watchdog/include
+ami/watchdog/share
+launch/.serverless
+launch/node_modules
+launch/static/
