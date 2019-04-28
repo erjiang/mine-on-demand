@@ -102,7 +102,7 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
     });
 
     if (response.status === 200) {
-      // TODO: Make this check until online
+      // The instance has finished booting; now we need to wait until the app starts
       console.log("The server thinks the server has started.");
       this.setState({
         serverState: ServerStateType.WAITING_FOR_ONLINE,
@@ -164,10 +164,20 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
 
     // The server is online
     if (this.state.serverState === ServerStateType.ONLINE) {
+      let onlineStr;
+      if (this.state.numPlayers === 0) {
+        onlineStr = "Nobody is";
+      } else if (this.state.numPlayers === 1) {
+        onlineStr = "One player is";
+      } else {
+        onlineStr = this.state.numPlayers + " players are";
+      }
       return (
         <div>
-          There are {this.state.numPlayers} players online and
-          the version is {this.state.serverVersion}.
+          <p>The server is online.</p>
+          <p>
+            {onlineStr} online and the version is {this.state.serverVersion}.
+          </p>
           <div className="buttonBar">{refreshButton}</div>
           <div className="serverConnectionInfo">
             To connect to this server, use <strong>minecraft.ericjiang.com</strong> as the host name.
