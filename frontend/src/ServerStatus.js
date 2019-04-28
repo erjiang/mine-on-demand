@@ -1,4 +1,5 @@
 import React from 'react';
+import Loader from './Loader';
 
 const STATUS_ENDPOINT = "serverstatus.json";
 const START_ENDPOINT = "start_server";
@@ -8,7 +9,7 @@ class ServerStatus extends React.Component {
     super(props);
     this.state = {
       hasChecked: false,
-      serverOnline: false,
+      serverOnline: true,
       numPlayers: 0,
       serverVersion: null,
       isServerStarting: false,
@@ -16,7 +17,7 @@ class ServerStatus extends React.Component {
   }
 
   componentDidMount() {
-    this.checkStatus();
+    ///this.checkStatus();
   }
 
   async checkStatus() {
@@ -95,7 +96,8 @@ class ServerStatus extends React.Component {
     if (!this.state.hasChecked) {
       return (
         <div>
-          Checking server status...
+          <p>Checking server status.</p>
+          <Loader />
         </div>
       );
     }
@@ -110,6 +112,10 @@ class ServerStatus extends React.Component {
           There are {this.state.numPlayers} players online and
           the version is {this.state.serverVersion}.
           <div className="buttonBar">{refreshButton}</div>
+          <div className="serverConnectionInfo">
+            To connect to this server, use <strong>minecraft.ericjiang.com</strong> as the host name.
+            Can't connect? Make sure you are <a href="https://ipv6test.google.com/" rel="noopener noreferrer" target="_blank">on the IPv6 Internet</a>.
+          </div>
         </div>
       );
     }
@@ -117,7 +123,10 @@ class ServerStatus extends React.Component {
     // The server is starting
     if (this.state.isServerStarting) {
       return (
-        <div>The server is starting. Wait patiently.</div>
+        <div>
+          <p>The server is starting. Wait patiently.</p>
+          <Loader />
+        </div>
       );
     }
 

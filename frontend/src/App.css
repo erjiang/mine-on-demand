@@ -1,5 +1,7 @@
 .App {
+  margin: 0 auto;
   text-align: center;
+  width: 400px;
 }
 
 .App-header {
@@ -24,6 +26,13 @@
   margin-right: 8px;
 }
 
-.loginButton {
+.logoutButton {
+  border-top: 1px solid #757575;
   margin-top: 48px;
+  padding-top: 20px;
+}
+
+.serverConnectionInfo {
+  margin-top: 48px;
+  text-align: left;
 }
