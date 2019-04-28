@@ -42,12 +42,17 @@ class App extends React.Component {
     let loginForm = null;
     if (this.state.signedIn) {
       const logoutButton = (
-        <div className="loginButton">
+        <div className="logoutButton">
+          Signed in as {this.state.profileObj.givenName}.
+          {' '}
           <GoogleLogout
             buttonText="Logout"
             onLogoutSuccess={() => this.onLogoutSuccess()}
             icon={false}
-          />
+            render={(props) => {
+              return <a href="#" onClick={props.onClick}>Logout</a>;
+            }}
+          />.
         </div>
       );
       if (this.state.isWilted) {
@@ -55,7 +60,6 @@ class App extends React.Component {
       } else {
         loginForm = (
           <div>
-            <p>You are signed in, {this.state.profileObj.givenName}.</p>
             <ServerStatus
               googleIDToken={this.state.googleIDToken}
               onError={(msg) => this.onError(msg)}
