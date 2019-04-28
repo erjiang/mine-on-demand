@@ -125,6 +125,7 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
   }
 
   onRefreshButtonClick() {
+    this.setState({ serverState: ServerStateType.UNKNOWN_CHECKING });
     this.checkStatus(true);
   }
 
