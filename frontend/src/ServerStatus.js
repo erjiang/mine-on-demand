@@ -9,7 +9,7 @@ class ServerStatus extends React.Component {
     super(props);
     this.state = {
       hasChecked: false,
-      serverOnline: true,
+      serverOnline: false,
       numPlayers: 0,
       serverVersion: null,
       isServerStarting: false,
@@ -17,7 +17,7 @@ class ServerStatus extends React.Component {
   }
 
   componentDidMount() {
-    ///this.checkStatus();
+    this.checkStatus();
   }
 
   async checkStatus() {
