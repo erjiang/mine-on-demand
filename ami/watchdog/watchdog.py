@@ -16,10 +16,10 @@ def get_number_of_players():
 
 def status_check():
     players = get_number_of_players()
-    print("%d players on server" % (players,))
     if players is None:
         # don't change either timestamp
-        pass
+        return
+    print("%d players on server" % (players,))
     if players > 0:
         server_last_online = time.time()
         server_last_occupied = time.time()
