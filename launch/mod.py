@@ -74,7 +74,7 @@ def get_server_status():
         version = status.version.name
     # mcstatus seems to like to throw AttributeError when the Minecraft server
     # is in the process of starting up
-    except (ConnectionRefusedError, socket.timeout, AttributeError):
+    except:
         is_online = False
         players = 0
         version = None
