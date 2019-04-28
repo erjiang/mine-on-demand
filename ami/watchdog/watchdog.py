@@ -17,15 +17,15 @@ def get_number_of_players():
 def status_check():
     players = get_number_of_players()
     print("%d players on server" % (players,))
+    if players is None:
+        # don't change either timestamp
+        pass
     if players > 0:
         server_last_online = time.time()
         server_last_occupied = time.time()
-    elif players == 0:
+    else: # players == 0:
         server_last_online = time.time()
         # don't change server_last_occupied
-    else:
-        # don't change either timestamp
-        pass
 
 def check_shutdown():
     """If server is due to shutdown, then return True"""
@@ -39,7 +39,8 @@ def check_shutdown():
     return False
 
 def shutdown():
-    subprocess.run('echo "sudo halt" | at now + 2 minute', shell=True)
+    # schedule poweroff for 1 minute from now
+    subprocess.run('sudo shutdown -P', shell=True)
 
 def main():
     while True:
