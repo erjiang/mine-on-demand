@@ -22,6 +22,7 @@ provider:
   runtime: python3.7
   region: us-west-1
   stage: dev
+  timeout: 60  # needed because launching the instance can take 30 sec
   environment:
     AMI_ID: ami-123
     SG_ID: sg-123
@@ -32,6 +33,19 @@ provider:
     REGION_NAME: us-west-1
     USER_WHITELIST: '["foobar@gmail.com","foobaz@gmail.com"]'
     GOOGLE_CLIENT_ID: 123456789012-blahblahblah.apps.googleusercontent.com
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+      - "ec2:AttachVolume"
+      - "ec2:CreateTags"
+      - "ec2:DescribeVolumes"
+      - "ec2:DescribeInstances"
+      - "ec2:TerminateInstances"
+      - "ec2:RunInstances"
+      - "ec2:DescribeInstanceAttribute"
+      - "ec2:StopInstances"
+      - "ec2:DescribeInstanceStatus"
+      Resource: "*"
 
 # you can overwrite defaults here
 #  stage: dev

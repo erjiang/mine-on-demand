@@ -1,5 +1,6 @@
 import os
 import socket
+import sys
 import time
 
 import boto3
@@ -16,6 +17,39 @@ IP_ADDR = os.environ['SERVER_IP']
 REGION_NAME = os.environ['REGION_NAME']
 
 ec2 = boto3.resource('ec2', region_name=REGION_NAME)
+client = boto3.client('ec2', region_name=REGION_NAME)
+
+
+def get_active_minecraft_server():
+    """Returns ec2.instance of any ec2 instance that has tag
+    mine-on-demand-managed=true"""
+    tagFilter = [{
+        'Name': 'tag:mine-on-demand-managed',
+        'Values': ['true']
+    }, {
+        'Name': 'instance-state-name',
+        # exclude terminated instances
+        'Values': ['pending', 'running', 'stopping', 'stopped', 'shutting-down']
+    }]
+    results = client.describe_instances(Filters=tagFilter)
+    if not results['Reservations']:
+        return None
+    for r in results['Reservations'][0]['Instances']:
+        return ec2.Instance(r['InstanceId'])
+
+
+def get_public_ip_address_of_server():
+    i = get_active_minecraft_server()
+    if not i:
+        return None
+    else:
+        return i.public_ip_address
+
+
+def is_volume_free(volume_id):
+    volume = ec2.Volume(volume_id)
+    print(volume.attachments)
+    return not volume.attachments
 
 
 def launch_instances():
@@ -67,28 +101,29 @@ def attach_volume(instance):
 
 
 def launch_minecraft_server():
+    """Returns True if successful, False if not or server is already running."""
+    print("Checking if server is already running")
+    i = get_active_minecraft_server()
+    if i:
+        return "Server %s seems to be already running" % (i.instance_id,)
+        return
+
+    print("Checking if world volume is free")
+    if not is_volume_free(WORLD_VOLUME):
+        return "World volume is not free. Server may already be running."
+
     instances = launch_instances()
-    yield "Launching instance..."
+    print("Launching instance...")
     instance = instances[0]
 
-    yield "Waiting for instance to start running"
+    print("Waiting for instance to start running")
     instance.wait_until_running()
 
-    yield "Attaching world volume"
+    print("Attaching world volume")
     attach_volume(instance)
 
-    yield "Waiting for minecraft to start"
-    server = MinecraftServer(IP_ADDR, 25565)
-    # repeatedly check the server status until it responds
-    for i in range(5):
-        try:
-            status = server.status()
-        except (ConnectionRefusedError, socket.timeout):
-            # expected, just wait for next time
-            time.sleep(2)
-        break
-
-    yield "Done"
+    print("Done")
+    return True
 
 
 if __name__ == '__main__':

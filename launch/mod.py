@@ -8,7 +8,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from mcstatus import MinecraftServer
 
-from launch import launch_minecraft_server
+from launch import launch_minecraft_server, get_public_ip_address_of_server
 
 app = Flask(__name__, static_url_path='')
 
@@ -45,19 +45,28 @@ def auth_required(func):
 def homepage():
     return app.send_static_file('index.html')
 
-@app.route("/dev/<path:filename>")
-def static_get_hack(filename):
-    """This lets us run locally with PUBLIC_URL=/dev/"""
-    return send_from_directory('static', filename)
-
 @app.route("/<path:filename>")
 def static_get(filename):
+    return send_from_directory('static', filename)
+
+@app.route("/dev/<path:filename>")
+def static_get_hack(filename):
     return send_from_directory('static', filename)
 
 @app.route("/serverstatus.json")
 @auth_required
 def get_server_status():
-    server = MinecraftServer(SERVER_IP, 25565)
+    # Since lambda doesn't support ipv6, we can't use the static ipv6 address.
+    # Instead, find the Ec2 instance that is the currently running minecraft
+    # server and get its public ipv4 address
+    server_ip = get_public_ip_address_of_server()
+    if server_ip is None:
+        return jsonify(
+            online=False,
+            players=0,
+            version=None
+        )
+    server = MinecraftServer(server_ip, 25565)
     try:
         status = server.status(retries=2)
         is_online = True
@@ -76,4 +85,12 @@ def get_server_status():
 @app.route("/start_server", methods=['POST'])
 @auth_required
 def start_server():
-    return Response(launch_minecraft_server(), mimetype='text/plain')
+    try:
+        results = launch_minecraft_server()
+    except Exception as e:
+        return Response(str(e), status=500, mimetype='text/plain')
+    if results == True:
+        return Response("Server started", mimetype='text/plain')
+    elif isinstance(results, str):
+        print(results)
+        return Response(results, status=409, mimetype='text/plain')
