@@ -21,6 +21,7 @@ interface ServerStatusState {
   numPlayers: number;
   serverVersion?: string;
   serverState: ServerStateType;
+  waitStartedAt?: Date;
 }
 
 class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState> {
@@ -59,8 +60,7 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
           this.setState({ serverState: ServerStateType.OFFLINE });
         } else {
           // We are going to wait again
-          console.log("Set new timeout of 5s");
-          setTimeout(() => this.onWaitingTimerTick(), 5000);
+          this.scheduleNewWaitTimeout();
         }
       } catch (e) {
         this.props.onError("Unable to check the status of the server: " + e.message);
@@ -72,8 +72,23 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
         this.props.onError("Received a non-200 response. See console.");
       } else {
         console.log("Received non-200 response from host. See console.");
+        this.scheduleNewWaitTimeout();
       }
     }
+  }
+
+  scheduleNewWaitTimeout() {
+    if (!this.state.waitStartedAt) {
+      this.props.onError("Tried to schedule new wait timeout but we're not waiting.");
+      return;
+    }
+    if (new Date().getTime() - this.state.waitStartedAt.getTime() > 60) {
+      // It's been more than a minute
+      this.props.onError("We've been waiting a while. Something probably went wrong.");
+      return;
+    }
+    console.log("Set new timeout of 5s");
+    setTimeout(() => this.onWaitingTimerTick(), 5000);
   }
 
   async startServer() {
@@ -89,12 +104,18 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
     if (response.status === 200) {
       // TODO: Make this check until online
       console.log("The server thinks the server has started.");
-      this.setState({ serverState: ServerStateType.WAITING_FOR_ONLINE });
+      this.setState({
+        serverState: ServerStateType.WAITING_FOR_ONLINE,
+        waitStartedAt: new Date(),
+      });
       this.checkStatus(false);
     } else if (response.status === 409) {
       // The server was already running
       console.log("Received 409: Server was already running.");
-      this.setState({ serverState: ServerStateType.WAITING_FOR_ONLINE });
+      this.setState({
+        serverState: ServerStateType.WAITING_FOR_ONLINE,
+        waitStartedAt: new Date(),
+      });
       this.checkStatus(false);
     } else {
       this.setState({ serverState: ServerStateType.OFFLINE });
