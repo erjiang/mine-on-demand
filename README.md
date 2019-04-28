@@ -7,6 +7,12 @@ This codebase includes a web page you can deploy on AWS Lambda, where users can
 log in and launch the minecraft server. The minecraft world is stored on an EBS
 volume that can be attached to new EC2 instances every time you want to play.
 
+## License
+
+This code is provided under the terms of the GNU Affero General Public
+License v3. Basically, if you use and modify this code, please share your
+modifications under the AGPLv3 as well!
+
 ## Changing the AWS region
 
 These instructions were written assuming the us-west-1 region in Northern
