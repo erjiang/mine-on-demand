@@ -4,23 +4,40 @@ import Loader from './Loader';
 const STATUS_ENDPOINT = "serverstatus.json";
 const START_ENDPOINT = "start_server";
 
-class ServerStatus extends React.Component {
-  constructor(props) {
+enum ServerStateType {
+  UNKNOWN_CHECKING = 0,   // Server state is unknown, we're checking
+  ONLINE = 1,             // Server is known to be online
+  OFFLINE = 2,            // Server is known to be offline
+  STARTING = 3,           // Server is starting
+  WAITING_FOR_ONLINE = 4, // We're waiting for the server to be online
+}
+
+interface ServerStatusProps {
+  googleIDToken: string;
+  onError: (msg: string) => void;
+}
+
+interface ServerStatusState {
+  numPlayers: number;
+  serverVersion?: string;
+  serverState: ServerStateType;
+}
+
+class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState> {
+  constructor(props: Readonly<ServerStatusProps>) {
     super(props);
     this.state = {
-      hasChecked: false,
-      serverOnline: false,
       numPlayers: 0,
-      serverVersion: null,
-      isServerStarting: false,
+      serverVersion: undefined,
+      serverState: ServerStateType.UNKNOWN_CHECKING,
     };
   }
 
   componentDidMount() {
-    this.checkStatus();
+    this.checkStatus(true);
   }
 
-  async checkStatus() {
+  async checkStatus(no_wait: boolean) {
     const response = await fetch(STATUS_ENDPOINT, {
       method: "GET",
       headers: new Headers({
@@ -31,24 +48,36 @@ class ServerStatus extends React.Component {
     if (response.status === 200) {
       try {
         const json = await response.json();
-        this.setState({
-          hasChecked: true,
-          serverOnline: json.online,
-          numPlayers: json.players,
-          serverVersion: json.version,
-        });
+        if (json.online) {
+          this.setState({
+            serverState: ServerStateType.ONLINE,
+            numPlayers: json.players,
+            serverVersion: json.version,
+          });
+        } else if (no_wait) {
+          // Server was offline, and we're not waiting
+          this.setState({ serverState: ServerStateType.OFFLINE });
+        } else {
+          // We are going to wait again
+          console.log("Set new timeout of 5s");
+          setTimeout(() => this.onWaitingTimerTick(), 5000);
+        }
       } catch (e) {
         this.props.onError("Unable to check the status of the server: " + e.message);
         return;
       }
     } else {
       console.table(response);
-      this.props.onError("Received a non-200 response. See console.");
+      if (no_wait) {
+        this.props.onError("Received a non-200 response. See console.");
+      } else {
+        console.log("Received non-200 response from host. See console.");
+      }
     }
   }
 
   async startServer() {
-    this.setState({ isServerStarting: true });
+    this.setState({ serverState: ServerStateType.STARTING });
 
     const response = await fetch(START_ENDPOINT, {
       method: "POST",
@@ -57,46 +86,52 @@ class ServerStatus extends React.Component {
       }),
     });
 
-    this.setState({ isServerStarting: false });
-
     if (response.status === 200) {
-      // TODO: This isn't quite right
-      setTimeout(() => {
-        console.log("The server thinks the server has started.");
-        this.setState({
-          hasChecked: false,
-        });
-        this.checkStatus();
-      }, 5000);
+      // TODO: Make this check until online
+      console.log("The server thinks the server has started.");
+      this.setState({ serverState: ServerStateType.WAITING_FOR_ONLINE });
+      this.checkStatus(false);
     } else if (response.status === 409) {
       // The server was already running
       console.log("Received 409: Server was already running.");
-      setTimeout(() => {
-        this.setState({
-          hasChecked: false,
-        });
-        this.checkStatus();
-      }, 5000);
+      this.setState({ serverState: ServerStateType.WAITING_FOR_ONLINE });
+      this.checkStatus(false);
     } else {
+      this.setState({ serverState: ServerStateType.OFFLINE });
       this.props.onError("Unfortunately, the server failed to launch: " + response.body);
       console.table(response);
     }
   }
 
   onRefreshButtonClick() {
-    this.checkStatus();
+    this.checkStatus(true);
   }
 
   onStartServerClick() {
     this.startServer();
   }
 
+  // Called by the waiting for online timer
+  onWaitingTimerTick() {
+    this.checkStatus(false);
+  }
+
   render() {
     // Currently checking status
-    if (!this.state.hasChecked) {
+    if (this.state.serverState === ServerStateType.UNKNOWN_CHECKING) {
       return (
         <div>
           <p>Checking server status.</p>
+          <Loader />
+        </div>
+      );
+    }
+
+    // Currently checking status until online
+    if (this.state.serverState === ServerStateType.WAITING_FOR_ONLINE) {
+      return (
+        <div>
+          <p>Waiting for server to come online.</p>
           <Loader />
         </div>
       );
@@ -106,7 +141,7 @@ class ServerStatus extends React.Component {
     const refreshButton = <button onClick={() => this.onRefreshButtonClick()}>Refresh</button>;
 
     // The server is online
-    if (this.state.serverOnline) {
+    if (this.state.serverState === ServerStateType.ONLINE) {
       return (
         <div>
           There are {this.state.numPlayers} players online and
@@ -121,7 +156,7 @@ class ServerStatus extends React.Component {
     }
 
     // The server is starting
-    if (this.state.isServerStarting) {
+    if (this.state.serverState === ServerStateType.STARTING) {
       return (
         <div>
           <p>The server is starting. Wait patiently.</p>

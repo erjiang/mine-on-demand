@@ -3,8 +3,18 @@ import React from 'react';
 import './App.css';
 import ServerStatus from './ServerStatus';
 
-class App extends React.Component {
-  constructor(props) {
+interface AppProps {
+}
+
+interface AppState {
+  signedIn: boolean,
+  isWilted: boolean,
+  profileObj?: any,
+  googleIDToken?: string,
+}
+
+class App extends React.Component<AppProps, AppState> {
+  constructor(props: Readonly<AppProps>) {
     super(props);
     this.state = {
       signedIn: false,
@@ -12,7 +22,7 @@ class App extends React.Component {
     };
   }
 
-  responseGoogle(response) {
+  responseGoogle(response: any) {
     if (response.error) {
       this.onError("Error logging in to Google.");
     } else if (response.profileObj) {
@@ -24,7 +34,7 @@ class App extends React.Component {
     }
   }
 
-  onError(msg) {
+  onError(msg: string) {
     alert(msg);
     this.setState({ isWilted: true });
   }
@@ -46,11 +56,11 @@ class App extends React.Component {
           Signed in as {this.state.profileObj.givenName}.
           {' '}
           <GoogleLogout
+            clientId={""}
             buttonText="Logout"
             onLogoutSuccess={() => this.onLogoutSuccess()}
-            icon={false}
             render={(props) => {
-              return <a href="#" onClick={props.onClick}>Logout</a>;
+              return <button className="linkLike" onClick={props && props.onClick}>Logout</button>;
             }}
           />.
         </div>
@@ -58,15 +68,19 @@ class App extends React.Component {
       if (this.state.isWilted) {
         loginForm = logoutButton;
       } else {
-        loginForm = (
-          <div>
-            <ServerStatus
-              googleIDToken={this.state.googleIDToken}
-              onError={(msg) => this.onError(msg)}
-            />
-            {logoutButton}
-          </div>
-        );
+        if (this.state.googleIDToken) {
+          loginForm = (
+            <div>
+              <ServerStatus
+                googleIDToken={this.state.googleIDToken}
+                onError={(msg) => this.onError(msg)}
+              />
+              {logoutButton}
+            </div>
+          );
+        } else {
+          throw new Error("Signed in but Google ID token not set.");
+        }
       }
     } else {
       loginForm = (

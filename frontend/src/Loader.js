@@ -3,7 +3,7 @@ import './Loader.css';
 
 function Loader() {
   return (
-    <div class="loader">Loading...</div>
+    <div className="loader"><span role="img" aria-label="Pickaxe">⛏️</span></div>
   );
 }
 
