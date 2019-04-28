@@ -86,6 +86,8 @@ def launch_instances():
         }],
         ImageId=AMI,
         InstanceType='t3.medium',
+        # this way the instance can shut itself down
+        InstanceInitiatedShutdownBehavior='terminate',
         KeyName=KEY_NAME,
         DryRun=False,
         EbsOptimized=True,
