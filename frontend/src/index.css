@@ -1,5 +1,5 @@
 body {
-  background-color: #323948;
+  background-color: #465065;
   color: #fff;
   font-size: 14px;
   margin: 0;
@@ -16,11 +16,22 @@ code, tt {
     monospace;
 }
 
-a {
-  color: #a2a2a2;
+button.linkLike {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+a,
+button.linkLike {
+  color: #bfbfbf;
   text-decoration: none;
 }
 
-a:hover {
+a:hover,
+button.linkLike:hover {
   text-decoration: underline;
 }
