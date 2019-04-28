@@ -34,36 +34,10 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
   }
 
   componentDidMount() {
-    this.checkStatus();
+    this.checkStatus(true);
   }
 
-  async checkStatus() {
-    const response = await fetch(STATUS_ENDPOINT, {
-      method: "GET",
-      headers: new Headers({
-        "Authorization": "Bearer " + this.props.googleIDToken,
-      }),
-    });
-
-    if (response.status === 200) {
-      try {
-        const json = await response.json();
-        this.setState({
-          numPlayers: json.players,
-          serverVersion: json.version,
-          serverState: json.online ? ServerStateType.ONLINE : ServerStateType.OFFLINE,
-        });
-      } catch (e) {
-        this.props.onError("Unable to check the status of the server: " + e.message);
-        return;
-      }
-    } else {
-      console.table(response);
-      this.props.onError("Received a non-200 response. See console.");
-    }
-  }
-
-  async checkStatusButWaitIfNotOnline() {
+  async checkStatus(no_wait: boolean) {
     const response = await fetch(STATUS_ENDPOINT, {
       method: "GET",
       headers: new Headers({
@@ -80,7 +54,11 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
             numPlayers: json.players,
             serverVersion: json.version,
           });
+        } else if (no_wait) {
+          // Server was offline, and we're not waiting
+          this.setState({ serverState: ServerStateType.OFFLINE });
         } else {
+          // We are going to wait again
           console.log("Set new timeout of 5s");
           setTimeout(() => this.onWaitingTimerTick(), 5000);
         }
@@ -89,7 +67,12 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
         return;
       }
     } else {
-      console.table("Ignoring non-200 response");
+      console.table(response);
+      if (no_wait) {
+        this.props.onError("Received a non-200 response. See console.");
+      } else {
+        console.log("Received non-200 response from host. See console.");
+      }
     }
   }
 
@@ -107,12 +90,12 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
       // TODO: Make this check until online
       console.log("The server thinks the server has started.");
       this.setState({ serverState: ServerStateType.WAITING_FOR_ONLINE });
-      this.checkStatusButWaitIfNotOnline();
+      this.checkStatus(false);
     } else if (response.status === 409) {
       // The server was already running
       console.log("Received 409: Server was already running.");
       this.setState({ serverState: ServerStateType.WAITING_FOR_ONLINE });
-      this.checkStatusButWaitIfNotOnline();
+      this.checkStatus(false);
     } else {
       this.setState({ serverState: ServerStateType.OFFLINE });
       this.props.onError("Unfortunately, the server failed to launch: " + response.body);
@@ -121,7 +104,7 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
   }
 
   onRefreshButtonClick() {
-    this.checkStatus();
+    this.checkStatus(true);
   }
 
   onStartServerClick() {
@@ -130,7 +113,7 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
 
   // Called by the waiting for online timer
   onWaitingTimerTick() {
-    this.checkStatusButWaitIfNotOnline();
+    this.checkStatus(false);
   }
 
   render() {
