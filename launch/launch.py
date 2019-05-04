@@ -14,6 +14,10 @@ WORLD_VOLUME = os.environ['WORLD_VOLUME']
 
 IP_ADDR = os.environ['SERVER_IP']
 
+USE_SPOT_INSTANCE = True
+INSTANCE_TYPE = os.getenv('INSTANCE_TYPE') or 'c5.xlarge'
+MAX_SPOT_PRICE = os.getenv('MAX_SPOT_PRICE') or '0.17' # per hour
+
 REGION_NAME = os.environ['REGION_NAME']
 
 ec2 = boto3.resource('ec2', region_name=REGION_NAME)
@@ -52,6 +56,69 @@ def is_volume_free(volume_id):
     return not volume.attachments
 
 
+def launch_spot_instance():
+    request = client.request_spot_instances(
+        InstanceCount=1,
+        SpotPrice=MAX_SPOT_PRICE,
+        Type='one-time',
+        InstanceInterruptionBehavior='terminate',
+        LaunchSpecification={
+            'NetworkInterfaces': [{
+                'DeviceIndex': 0,
+                'Ipv6Addresses': [
+                    {
+                        'Ipv6Address': IP_ADDR
+                    }
+                ],
+                'SubnetId': SUBNET_ID,
+                'Groups': [SG_ID],
+            }],
+        #    'BlockDeviceMappings': [
+        #        {
+        #            'Ebs': {
+        #                'SnapshotId': 'snap-0b95f8c0766c1aabf',
+        #                'VolumeSize': 8,
+        #                'DeleteOnTermination': True,
+        #                'VolumeType': 'gp2',
+        #                'Encrypted': False
+        #            },
+        #        },
+        #    ],
+            'ImageId': AMI,
+            'InstanceType': INSTANCE_TYPE,
+            # not needed for spot instances apparently
+            #'InstanceInitiatedShutdownBehavior': 'terminate',
+            'KeyName': KEY_NAME,
+            'EbsOptimized': True,
+        }
+    )
+    print(request)
+    spot_id = request['SpotInstanceRequests'][0]['SpotInstanceRequestId']
+    instance_id = request['SpotInstanceRequests'][0].get('InstanceId')
+    print("instance_id is %s" % (instance_id,))
+
+    # since we can't tag the instances in the request_spot_instances call, we
+    # need to wait for the instances to be created and then tag them separately
+    while not instance_id:
+        time.sleep(2)
+        spot_info = client.describe_spot_instance_requests(
+            SpotInstanceRequestIds=[spot_id]
+        )
+        instance_id = spot_info['SpotInstanceRequests'][0].get('InstanceId')
+        print("instance_id is %s" % (instance_id,))
+
+    print("Tagging %s" % (instance_id,))
+    ec2.create_tags(
+        Resources=[instance_id],
+        Tags=[{
+            'Key': 'mine-on-demand-managed',
+            'Value': 'true'
+        }]
+    )
+
+    return ec2.Instance(instance_id)
+
+
 def launch_instances():
     instances = ec2.create_instances(
         MinCount=1,
@@ -85,7 +152,7 @@ def launch_instances():
             }]
         }],
         ImageId=AMI,
-        InstanceType='t3.medium',
+        InstanceType=INSTANCE_TYPE,
         # this way the instance can shut itself down
         InstanceInitiatedShutdownBehavior='terminate',
         KeyName=KEY_NAME,
@@ -114,9 +181,22 @@ def launch_minecraft_server():
     if not is_volume_free(WORLD_VOLUME):
         return "World volume is not free. Server may already be running."
 
-    instances = launch_instances()
-    print("Launching instance...")
-    instance = instances[0]
+    if USE_SPOT_INSTANCE:
+        instance_id = launch_spot_instance()
+        instance = None
+        # keep checking until we get the instance ID we need
+        while not instance:
+            time.sleep(2)
+            instance = get_active_minecraft_server()
+            if instance:
+                instance_id = instance.instance_id
+                print("Spot instance launched")
+            else:
+                print("Waiting for spot instance request")
+    else:
+        instances = launch_instances()
+        print("Launching instance...")
+        instance = instances[0]
 
     print("Waiting for instance to start running")
     instance.wait_until_running()
@@ -129,5 +209,4 @@ def launch_minecraft_server():
 
 
 if __name__ == '__main__':
-    for x in launch_minecraft_server():
-        print(x)
+    launch_minecraft_server()
