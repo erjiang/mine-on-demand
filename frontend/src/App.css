@@ -21,8 +21,6 @@
 }
 
 .buttonBar button {
-  font-size: 16px;
-  font-weight: bold;
   margin-right: 8px;
 }
 
@@ -37,15 +35,23 @@
   text-align: left;
 }
 
-button {
-  background: #efefef;
-  border: 0;
-  border-radius: 4px;
-  color: #252525;
-  cursor: pointer;
-  padding: 8px;
+.statusCircle {
+  border-radius: 100%;
+  border: 1px solid;
+  box-sizing: border-box;
+  display: inline-block;
+  margin-right: 2px;
+  padding: 5px;
+  position: relative;
+  top: 1px;
 }
 
-button:hover {
-  background: #e0e0e0;
+.statusCircle.green {
+  background-color: #50cf62;
+  border-color: #27c23d;
+}
+
+.statusCircle.red {
+  background-color: #f65b55;
+  border-color: #f3382e;
 }

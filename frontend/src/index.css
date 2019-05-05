@@ -1,9 +1,12 @@
 body {
   background-color: #465065;
   color: #fff;
-  font-size: 14px;
   margin: 0;
   padding: 0;
+}
+
+body, button {
+  font-size: 14px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -14,6 +17,20 @@ body {
 code, tt {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+button.tactile {
+  background: #efefef;
+  border: 0;
+  border-radius: 4px;
+  color: #252525;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 4px 8px;
+}
+
+button.tactile:hover {
+  background: #e0e0e0;
 }
 
 button.linkLike {

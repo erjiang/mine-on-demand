@@ -160,7 +160,13 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
     }
 
     // Refresh button
-    const refreshButton = <button onClick={() => this.onRefreshButtonClick()}>Refresh</button>;
+    const refreshButton = (
+      <button
+        onClick={() => this.onRefreshButtonClick()}
+        className="tactile">
+        Refresh
+      </button>
+    );
 
     // The server is online
     if (this.state.serverState === ServerStateType.ONLINE) {
@@ -174,7 +180,7 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
       }
       return (
         <div>
-          <p>The server is online.</p>
+          <p><span className="statusCircle green"></span> The server is online.</p>
           <p>
             {onlineStr} online and the version is {this.state.serverVersion}.
           </p>
@@ -200,9 +206,9 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
     // The server is offline
     return (
       <div>
-        <div>The server is offline.</div>
+        <div><span className="statusCircle red"></span> The server is offline.</div>
         <div className="buttonBar">
-        <button onClick={() => this.onStartServerClick()}>Start Server</button>
+        <button onClick={() => this.onStartServerClick()} className="tactile">Start Server</button>
           {refreshButton}
         </div>
       </div>
