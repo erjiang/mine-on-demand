@@ -15,6 +15,7 @@ def get_number_of_players():
         return None
 
 def status_check():
+    global server_last_online, server_last_occupied
     players = get_number_of_players()
     if players is None:
         # don't change either timestamp
