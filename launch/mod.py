@@ -90,6 +90,7 @@ def start_server():
     try:
         results = launch_minecraft_server()
     except Exception as e:
+        print(str(e))
         return Response(str(e), status=500, mimetype='text/plain')
     if results == True:
         return Response("Server started", mimetype='text/plain')
