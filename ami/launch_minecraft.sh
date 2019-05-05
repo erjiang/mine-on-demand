@@ -11,6 +11,8 @@ done
 echo "Mounting BTRFS volume"
 sudo mount "$DEVICE_NAME" /home/ubuntu/world -o defaults,noatime
 
+ln -s /home/ubuntu/world/ops.json /home/ubuntu/ops.json
+
 sudo chown ubuntu /home/ubuntu/world
 
 java -Xms1024M -Xmx2536M -jar /home/ubuntu/server.jar
