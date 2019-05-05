@@ -36,3 +36,16 @@
   margin-top: 48px;
   text-align: left;
 }
+
+button {
+  background: #efefef;
+  border: 0;
+  border-radius: 4px;
+  color: #252525;
+  cursor: pointer;
+  padding: 8px;
+}
+
+button:hover {
+  background: #e0e0e0;
+}
