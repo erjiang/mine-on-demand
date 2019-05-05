@@ -52,7 +52,6 @@ def get_public_ip_address_of_server():
 
 def is_volume_free(volume_id):
     volume = ec2.Volume(volume_id)
-    print(volume.attachments)
     return not volume.attachments
 
 

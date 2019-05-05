@@ -24,6 +24,8 @@ provider:
   stage: dev
   timeout: 60  # needed because launching the instance can take 30 sec
   environment:
+    INSTANCE_TYPE: c5.large
+    MAX_SPOT_PRICE: "0.10"
     AMI_ID: ami-123
     SG_ID: sg-123
     SUBNET_ID: subnet-123
@@ -45,6 +47,9 @@ provider:
       - "ec2:DescribeInstanceAttribute"
       - "ec2:StopInstances"
       - "ec2:DescribeInstanceStatus"
+      - "ec2:RequestSpotInstances"
+      - "ec2:DescribeSpotInstanceRequests"
+      - "ec2:CreateTags"
       Resource: "*"
 
 # you can overwrite defaults here
