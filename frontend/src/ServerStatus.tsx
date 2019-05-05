@@ -119,7 +119,9 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
       this.checkStatus(false);
     } else {
       this.setState({ serverState: ServerStateType.OFFLINE });
-      this.props.onError("Unfortunately, the server failed to launch: " + response.body);
+
+      const bodyText = await response.text();
+      this.props.onError("Unfortunately, the server failed to launch: " + bodyText);
       console.table(response);
     }
   }
