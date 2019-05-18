@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# minecraft server 1.14 download link:
+# minecraft server 1.14.1 JAR
 # change this link to install a different package
-SERVER_URL=https://launcher.mojang.com/v1/objects/f1a0073671057f01aa843443fef34330281333ce/server.jar
+SERVER_URL=https://launcher.mojang.com/v1/objects/ed76d597a44c5266be2a7fcd77a8270f1f0bc118/server.jar
 
 # need to do this otherwise supervisor won't install properly
 # see https://github.com/hashicorp/terraform/issues/1025
