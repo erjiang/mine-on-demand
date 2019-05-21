@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# This bash script takes a plain Ubuntu AMI and installs the necessary bits to
+# run a Minecraft server on it. It also sets up /home/ubuntu/world to be a
+# symlink to the Minecraft world files.
+#
 
 # minecraft server 1.14.1 JAR
 # change this link to install a different package

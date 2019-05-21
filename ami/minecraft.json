@@ -33,6 +33,11 @@
         },
         {
             "type": "file",
+            "source": "server_wrapper.py",
+            "destination": "/home/ubuntu/server_wrapper.py"
+        },
+        {
+            "type": "file",
             "source": "watchdog.conf",
             "destination": "/home/ubuntu/watchdog.conf"
         },
