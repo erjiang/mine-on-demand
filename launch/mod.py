@@ -8,7 +8,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from mcstatus import MinecraftServer
 
-from launch import launch_minecraft_server, get_public_ip_address_of_server
+from launch import launch_minecraft_server, get_public_ip_address_of_server, notify_sns
 
 app = Flask(__name__, static_url_path='')
 
@@ -37,7 +37,7 @@ def auth_required(func):
             print("Email %s is not in whitelist" % (idinfo['email'],))
             abort(403)
 
-        return func(*args, **kwargs)
+        return func(*args, user=idinfo['email'], **kwargs)
     return with_auth_required
 
 
@@ -55,7 +55,7 @@ def static_get_hack(filename):
 
 @app.route("/serverstatus.json")
 @auth_required
-def get_server_status():
+def get_server_status(user=None):
     # Since lambda doesn't support ipv6, we can't use the static ipv6 address.
     # Instead, find the Ec2 instance that is the currently running minecraft
     # server and get its public ipv4 address
@@ -84,14 +84,16 @@ def get_server_status():
         version=version
     )
 
+
 @app.route("/start_server", methods=['POST'])
 @auth_required
-def start_server():
+def start_server(user=None):
     try:
         results = launch_minecraft_server()
     except Exception as e:
-        print(str(e))
+        print(e)
         return Response(str(e), status=500, mimetype='text/plain')
+    notify_sns("%s started the server!" % (user,))
     if results == True:
         return Response("Server started", mimetype='text/plain')
     elif isinstance(results, str):

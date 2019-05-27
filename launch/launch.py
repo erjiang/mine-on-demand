@@ -12,6 +12,8 @@ SUBNET_ID = os.environ['SUBNET_ID']
 KEY_NAME = os.environ['KEY_NAME']
 WORLD_VOLUME = os.environ['WORLD_VOLUME']
 
+SNS_ARN = os.getenv('SNS_ARN')
+
 IP_ADDR = os.environ['SERVER_IP']
 
 USE_SPOT_INSTANCE = True
@@ -205,6 +207,22 @@ def launch_minecraft_server():
 
     print("Done")
     return True
+
+
+def notify_sns(msg, subject='Minecraft Server notification'):
+    # disable SNS notifications by not setting SNS_ARN
+    if not SNS_ARN:
+        return False
+    # only us-east-1 supports SMS, hence why the SNS topic is there instead of
+    # the local region
+    sns_client = boto3.client('sns', region_name='us-east-1')
+    print("Publishing to %s" % (SNS_ARN,))
+    response = sns_client.publish(
+        TopicArn=SNS_ARN,
+        Message=msg,
+        Subject=subject)
+    print(response)
+    return response
 
 
 if __name__ == '__main__':
