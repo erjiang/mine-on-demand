@@ -20,6 +20,7 @@ service: mine-on-demand # NOTE: update this with your service name
 provider:
   name: aws
   runtime: python3.7
+  memorySize: 128
   region: us-west-1
   stage: dev
   timeout: 60  # needed because launching the instance can take 30 sec
