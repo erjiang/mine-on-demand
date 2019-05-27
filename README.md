@@ -97,3 +97,13 @@ section of the Google API console. It will look like
 1. Replace all the environment variables with the actual IDs, options, etc.
 that you remembered from the above steps.
 1. Run `sls deploy`
+
+## Updating/changing the Minecraft server version
+
+The Minecraft server is downloaded and baked into the AMI. To change the server JAR:
+
+1. Get the URL of the server JAR that you want to use.
+1. In `ami/install_minecraft.sh`, change the URL near the top of the file.
+1. Run `make ami/MY_AMI` or `packer minecraft.json` to build the new AMI.
+1. Update your serverless.yml file with the new AMI ID.
+1. Deploy the serverless code (`sls deploy` or `make sls-deploy`)
