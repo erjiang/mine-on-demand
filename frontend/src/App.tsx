@@ -3,6 +3,8 @@ import React from 'react';
 import './App.css';
 import ServerStatus from './ServerStatus';
 
+const ERR_POPUP_CLOSED = 'popup_closed_by_user';
+
 interface AppProps {
 }
 
@@ -24,7 +26,10 @@ class App extends React.Component<AppProps, AppState> {
 
   responseGoogle(response: any) {
     if (response.error) {
-      this.onError("Error logging in to Google.");
+      if (response.error === ERR_POPUP_CLOSED) {
+        return;
+      }
+      this.onError("Error logging in to Google: " + response.error);
     } else if (response.profileObj) {
       this.setState({
         signedIn: true,
