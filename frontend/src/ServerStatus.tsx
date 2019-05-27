@@ -4,6 +4,9 @@ import Loader from './Loader';
 const STATUS_ENDPOINT = "serverstatus.json";
 const START_ENDPOINT = "start_server";
 
+// Maximum amount of time to wait before timing out waiting for status
+const STATUS_CHECK_TIMEOUT_MS = 120000;
+
 enum ServerStateType {
   UNKNOWN_CHECKING = 0,   // Server state is unknown, we're checking
   ONLINE = 1,             // Server is known to be online
@@ -64,14 +67,15 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
         }
       } catch (e) {
         this.props.onError("Unable to check the status of the server: " + e.message);
-        return;
       }
+    } else if (response.status === 403) {
+      // This Google account isn't authorized to access the server
+      this.props.onError("The Google account you're using isn't authorized to use the server.");
     } else {
       console.table(response);
       if (no_wait) {
         this.props.onError("Received a non-200 response. See console.");
       } else {
-        console.log("Received non-200 response from host. See console.");
         this.scheduleNewWaitTimeout();
       }
     }
@@ -82,8 +86,8 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
       this.props.onError("Tried to schedule new wait timeout but we're not waiting.");
       return;
     }
-    if (new Date().getTime() - this.state.waitStartedAt.getTime() > 120000) {
-      // It's been more than a minute
+    if (new Date().getTime() - this.state.waitStartedAt.getTime() > STATUS_CHECK_TIMEOUT_MS) {
+      // It's been more than the timeout threshold
       this.props.onError("We've been waiting a while. Something probably went wrong.");
       return;
     }
