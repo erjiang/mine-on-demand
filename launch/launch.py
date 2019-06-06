@@ -1,3 +1,4 @@
+from dateutil import parser
 import os
 import socket
 import sys
@@ -6,7 +7,9 @@ import time
 import boto3
 from mcstatus import MinecraftServer
 
-AMI = os.environ['AMI_ID']
+# if your AMIs have a different name, you can change this. find_latest_image
+# will look at images starting with this string.
+AMI_PREFIX = os.getenv('AMI_PREFIX') or 'mine-on-demand '
 SG_ID = os.environ['SG_ID']
 SUBNET_ID = os.environ['SUBNET_ID']
 KEY_NAME = os.environ['KEY_NAME']
@@ -24,6 +27,28 @@ REGION_NAME = os.environ['REGION_NAME']
 
 ec2 = boto3.resource('ec2', region_name=REGION_NAME)
 client = boto3.client('ec2', region_name=REGION_NAME)
+
+
+def get_my_account_id():
+    return boto3.client('sts').get_caller_identity().get('Account')
+
+
+def find_latest_image():
+    """Returns the latest mine-on-demand AMI ID."""
+    response = client.describe_images(
+        Owners=[get_my_account_id()],
+        Filters=[{
+            'Name': 'name',
+            'Values': [AMI_PREFIX + '*']
+        }])
+    newest_image = None
+    for image in response['Images']:
+        if newest_image is None:
+            newest_image = image
+        elif parser.parse(image['CreationDate']) > parser.parse(newest_image['CreationDate']):
+            newest_image = image
+    if newest_image:
+        return newest_image['ImageId']
 
 
 def get_active_minecraft_server():

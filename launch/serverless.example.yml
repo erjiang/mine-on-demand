@@ -27,7 +27,6 @@ provider:
   environment:
     INSTANCE_TYPE: c5.large
     MAX_SPOT_PRICE: "0.10"
-    AMI_ID: ami-123
     SG_ID: sg-123
     SUBNET_ID: subnet-123
     KEY_NAME: west-1-personal
@@ -42,6 +41,7 @@ provider:
       Action:
       - "ec2:AttachVolume"
       - "ec2:CreateTags"
+      - "ec2:DescribeImages"
       - "ec2:DescribeVolumes"
       - "ec2:DescribeInstances"
       - "ec2:TerminateInstances"
@@ -52,6 +52,7 @@ provider:
       - "ec2:RequestSpotInstances"
       - "ec2:DescribeSpotInstanceRequests"
       - "ec2:CreateTags"
+      - "sts:GetCallerIdentity"
       Resource: "*"
     - Effect: Allow
       Action:
