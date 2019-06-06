@@ -89,12 +89,12 @@ def get_server_status(user=None):
 @auth_required
 def start_server(user=None):
     print("%s requested a server start." % (user,))
+    notify_sns("%s started the server!" % (user,))
     try:
         results = launch_minecraft_server()
     except Exception as e:
         print(e)
         return Response(str(e), status=500, mimetype='text/plain')
-    notify_sns("%s started the server!" % (user,))
     if results == True:
         return Response("Server started", mimetype='text/plain')
     elif isinstance(results, str):
