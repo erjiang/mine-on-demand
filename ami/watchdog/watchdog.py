@@ -1,4 +1,5 @@
 from mcstatus import MinecraftServer
+import socket
 import subprocess
 import time
 import xmlrpc.client
@@ -6,8 +7,9 @@ import xmlrpc.client
 server_last_online = time.time()
 server_last_occupied = time.time()
 
+server = MinecraftServer('localhost', 25565)
+
 def get_number_of_players():
-    server = MinecraftServer('localhost', 25565)
     try:
         status = server.status(retries=2)
         return status.players.online
@@ -50,8 +52,11 @@ def check_termination_notice():
     import urllib.request
     # if this request returns a 404, then the instance is not scheduled to terminate
     try:
-        urllib.request.urlopen('http://169.254.169.254/latest/meta-data/spot/termination-time')
+        urllib.request.urlopen('http://169.254.169.254/latest/meta-data/spot/termination-time', timeout=2)
         return True
+    except urllib.error.URLError as e:
+        print(e)
+        print("Could not get instance metadata. Are we in EC2??")
     except urllib.error.HTTPError as e:
         if e.code == 404:
             return False
@@ -61,19 +66,27 @@ def check_termination_notice():
 
 def shutdown(msg="Minecraft server shutting down!"):
     # schedule poweroff for 1 minute from now
-    s = xmlrpc.client.ServerProxy('http://localhost:25560')
-    s.run_command("/say %s" % (msg,))
-    time.sleep(5)
-    s.run_command("/save-off")
-    s.run_command("/save-all")
-    s.run_command("/stop")
+    try:
+        s = xmlrpc.client.ServerProxy('http://localhost:25560')
+        s.run_command("/say %s" % (msg,))
+        time.sleep(5)
+        s.run_command("/save-off")
+        s.run_command("/save-all")
+        s.run_command("/stop")
+    except Exception as e:
+        print(e)
+        print("Continuing with shutdown despite error...")
     time.sleep(15)
     subprocess.run('sudo shutdown -P', shell=True)
 
 
 def main():
     while True:
-        status_check()
+        try:
+            status_check()
+        except Exception as e:
+            print("Got exception in status_check:")
+            print(e)
         if check_shutdown():
             shutdown()
             print("Good-bye")
