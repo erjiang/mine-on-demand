@@ -88,6 +88,7 @@ def get_server_status(user=None):
 @app.route("/start_server", methods=['POST'])
 @auth_required
 def start_server(user=None):
+    print("%s requested a server start." % (user,))
     try:
         results = launch_minecraft_server()
     except Exception as e:
