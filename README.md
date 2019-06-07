@@ -89,6 +89,52 @@ You will need a Client ID for OAuth, which you can create in the credentials
 section of the Google API console. It will look like
 "12345-blahblah12345.apps.googleusercontent.com".
 
+## Whitelist users
+
+The website only allows Google accounts that are in the whitelist. There are
+two ways to configure the whitelist: a publicly accessible CSV file served over
+HTTP, or an environment variable defined in your serverless.yml file.
+
+**Note:** This whitelist only controls who can access the server status webpage
+and launch the server. It does not control who can connect to the Minecraft
+server once it is launched.
+
+### CSV whitelist
+
+By defining `USER_WHITELIST_CSV_URL` in your serverless.yml file, the app will
+check users logging in against that CSV file. The CSV file needs to be
+accessible without logging in.
+
+The CSV file needs to have authorized emails in the first column, skipping the
+first row (which you can use for column headers). Here is an example:
+
+| my friends        |
+|-------------------|
+| alice@example.com |
+| bob@example.com   |
+| carol@example.com |
+
+The easiest way to set up a CSV whitelist is to create a Google Sheet. Then,
+click on File - Publish to the web. Choose to publish Sheet1 as
+"Comma-separated values (.csv)" and make sure you check "Automatically
+republish when changes are made."
+
+This allows you to delegate control of the whitelist to multiple users via
+Google Drive. For example, you can let certain trusted friends add additional
+people to the whitelist.
+
+### Environment variable whitelist
+
+The other way to set the whitelist is to define the `USER_WHITELIST`
+environment variable in your serverless.yml file. If you go this route, make
+sure you do not set `USER_WHITELIST_CSV_URL` which takes priority over
+`USER_WHITELIST`.
+
+This variable is specified as a string that can be parsed as a JSON array.
+Here's an example of what you might write in your serverless.yml file:
+
+    USER_WHITELIST: '["alice@example.com", "bob@example.com"]'
+
 ## Deploying the serverless website
 
 1. Go into the `launch/` directory
@@ -105,5 +151,3 @@ The Minecraft server is downloaded and baked into the AMI. To change the server 
 1. Get the URL of the server JAR that you want to use.
 1. In `ami/install_minecraft.sh`, change the URL near the top of the file.
 1. Run `make ami/MY_AMI` or `packer minecraft.json` to build the new AMI.
-1. Update your serverless.yml file with the new AMI ID.
-1. Deploy the serverless code (`sls deploy` or `make sls-deploy`)
