@@ -1,20 +1,50 @@
+import csv
 import json
 import os
 import socket
+import time
 from functools import wraps
 
 from flask import Flask, jsonify, request, Response, abort, send_from_directory
 from google.oauth2 import id_token
-from google.auth.transport import requests
+from google.auth.transport import requests as grequests
 from mcstatus import MinecraftServer
+import requests
 
 from launch import launch_minecraft_server, get_public_ip_address_of_server, notify_sns
 
 app = Flask(__name__, static_url_path='')
 
 SERVER_IP = os.environ['SERVER_IP']
-USER_WHITELIST = json.loads(os.environ['USER_WHITELIST'])
 CLIENT_ID = os.environ['GOOGLE_CLIENT_ID']
+
+CACHED_ACCESS_LIST = None
+CACHED_ACCESS_LIST_TIMESTAMP = 0
+CACHE_DURATION = 60
+
+
+def get_user_whitelist():
+    """Returns a set or list containing email addresses that should be allowed
+    to access this site."""
+    if os.getenv('USER_WHITELIST_CSV_URL'):
+        return get_access_csv(os.getenv('USER_WHITELIST_CSV_URL'))
+    else:
+        return json.loads(os.environ['USER_WHITELIST'])
+
+
+def get_access_csv(csv_url):
+    global CACHED_ACCESS_LIST, CACHED_ACCESS_LIST_TIMESTAMP
+    if time.time() - CACHED_ACCESS_LIST_TIMESTAMP < CACHE_DURATION:
+        return CACHED_ACCESS_LIST
+
+    raw_csv = requests.get(csv_url)
+    reader = csv.reader(raw_csv.text.splitlines())
+    # skip first line of headers
+    # first column is email addresses
+    allowed_accounts = set([r[0] for r in reader][1:])
+    CACHED_ACCESS_LIST = allowed_accounts
+    CACHED_ACCESS_LIST_TIMESTAMP = time.time()
+    return allowed_accounts
 
 
 def auth_required(func):
@@ -24,7 +54,7 @@ def auth_required(func):
         if not auth_header or not auth_header.startswith('Bearer '):
             abort(401)
         token = auth_header[7:]
-        idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+        idinfo = id_token.verify_oauth2_token(token, grequests.Request(), CLIENT_ID)
         if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
             raise ValueError('Wrong issuer.')
         if "email" not in idinfo:
@@ -33,7 +63,7 @@ def auth_required(func):
             print("Email is not verified. Not accepting it.")
             abort(403)
 
-        if idinfo['email'] not in USER_WHITELIST:
+        if idinfo['email'] not in get_user_whitelist():
             print("Email %s is not in whitelist" % (idinfo['email'],))
             abort(403)
 
