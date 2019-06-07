@@ -1,14 +1,16 @@
 #!/bin/bash
 
+echo $(date -u) Initiating server...
+
 # is there a better way to tell what the second EBS volume's device name is?
 DEVICE_NAME=`dmesg | grep "BTRFS: device" | tail -1 | grep '/dev/.*$' -o`
 while [[ -z "$DEVICE_NAME" ]]; do
-    echo "Looking for BTRFS device"
+    echo $(date -u) "Looking for BTRFS device"
     DEVICE_NAME=`dmesg | grep "BTRFS: device" | tail -1 | grep '/dev/.*$' -o`
     sleep 5
 done
 
-echo "Mounting BTRFS volume"
+echo $(date -u) "Mounting BTRFS volume"
 sudo mount "$DEVICE_NAME" /home/ubuntu/world -o defaults,noatime
 
 ln -s /home/ubuntu/world/ops.json /home/ubuntu/ops.json
