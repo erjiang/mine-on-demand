@@ -110,7 +110,7 @@ def launch_spot_instance():
         #            },
         #        },
         #    ],
-            'ImageId': AMI,
+            'ImageId': find_latest_image(),
             'InstanceType': INSTANCE_TYPE,
             # not needed for spot instances apparently
             #'InstanceInitiatedShutdownBehavior': 'terminate',
