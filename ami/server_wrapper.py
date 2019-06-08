@@ -3,6 +3,13 @@ from xmlrpc.server import SimpleXMLRPCServer
 
 # This should be run in the /home/ubuntu directory
 
+SERVER_FLAGS = [
+    "-XX:+UseConcMarkSweepGC",
+    "-XX:+UseParNewGC",
+    "-XX:+CMSIncrementalPacing",
+    "-XX:ParallelGCThreads=2",
+    "-XX:+AggressiveOpts",
+]
 
 minecraft_server = None
 
@@ -20,7 +27,7 @@ def run_command(cmd):
 def run_minecraft():
     global minecraft_server
     minecraft_server = subprocess.Popen(
-        ["java", "-Xms1024M", "-Xmx2536M", "-jar", "/home/ubuntu/server.jar"],
+        ["java", "-Xms1024M", "-Xmx3000M"] + SERVER_FLAGS + ["-jar", "/home/ubuntu/server.jar", "nogui"],
         stdin=subprocess.PIPE
     )
 
