@@ -10,8 +10,8 @@ volume that can be attached to new EC2 instances every time you want to play.
 ## License
 
 This code is provided under the terms of the GNU Affero General Public
-License v3. Basically, if you use and modify this code, please share your
-modifications under the AGPLv3 as well!
+License v3 or later. Basically, if you use and modify this code, please share
+your modifications under the AGPLv3 as well!
 
 ## Changing the AWS region
 
