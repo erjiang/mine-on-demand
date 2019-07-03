@@ -24,6 +24,8 @@ interface ServerStatusState {
   numPlayers: number;
   serverVersion?: string;
   serverState: ServerStateType;
+  serverIPv4Addr?: string;
+  serverHostname?: string;
   waitStartedAt?: Date;
 }
 
@@ -57,6 +59,8 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
             serverState: ServerStateType.ONLINE,
             numPlayers: json.players,
             serverVersion: json.version,
+            serverHostname: json.hostname,
+            serverIPv4Addr: json.ipv4_addr
           });
         } else if (no_wait) {
           // Server was offline, and we're not waiting
@@ -192,8 +196,9 @@ class ServerStatus extends React.Component<ServerStatusProps, ServerStatusState>
           </p>
           <div className="buttonBar">{refreshButton}</div>
           <div className="serverConnectionInfo">
-            To connect to this server, use <strong>minecraft.ericjiang.com</strong> as the host name.
+            To connect to this server, use <strong>{this.state.serverHostname}</strong> as the host name.
             Can't connect? Make sure you are <a href="https://ipv6test.google.com/" rel="noopener noreferrer" target="_blank">on the IPv6 Internet</a>.
+            Or, connect using IPv4: {this.state.serverIPv4Addr}
           </div>
         </div>
       );

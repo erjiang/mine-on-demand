@@ -32,6 +32,7 @@ provider:
     KEY_NAME: west-1-personal
     WORLD_VOLUME: vol-123
     SERVER_IP: "2600::::"
+    SERVER_HOSTNAME: "minecraft.mydomain.com"
     REGION_NAME: us-west-1
     USER_WHITELIST: '["foobar@gmail.com","foobaz@gmail.com"]'
     GOOGLE_CLIENT_ID: 123456789012-blahblahblah.apps.googleusercontent.com

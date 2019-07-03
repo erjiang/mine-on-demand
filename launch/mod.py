@@ -16,6 +16,7 @@ from launch import launch_minecraft_server, get_public_ip_address_of_server, not
 app = Flask(__name__, static_url_path='')
 
 SERVER_IP = os.environ['SERVER_IP']
+SERVER_HOSTNAME = os.environ['SERVER_HOSTNAME']
 CLIENT_ID = os.environ['GOOGLE_CLIENT_ID']
 
 CACHED_ACCESS_LIST = None
@@ -94,7 +95,8 @@ def get_server_status(user=None):
         return jsonify(
             online=False,
             players=0,
-            version=None
+            version=None,
+            hostname=SERVER_HOSTNAME
         )
     server = MinecraftServer(server_ip, 25565)
     try:
@@ -110,8 +112,10 @@ def get_server_status(user=None):
         version = None
     return jsonify(
         online=is_online,
+        ipv4_addr=server_ip,
         players=players,
-        version=version
+        version=version,
+        hostname=SERVER_HOSTNAME
     )
 
 
