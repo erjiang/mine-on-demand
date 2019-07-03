@@ -19,7 +19,7 @@
         },
         "instance_type": "t3.micro",
         "ssh_username": "ubuntu",
-        "ami_name": "mctest {{timestamp}}"
+        "ami_name": "mine-on-demand {{timestamp}}"
     }],
     "provisioners": [
         {

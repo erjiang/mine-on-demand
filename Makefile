@@ -2,7 +2,7 @@ all: ami frontend sls-deploy
 
 frontend: frontend/src/*
 	cd frontend && PUBLIC_URL=/dev/ npm run build
-	rm -r launch/static/
+	@rm -r launch/static/
 	cp -R frontend/build/ launch/static/
 
 ami: ami/*
