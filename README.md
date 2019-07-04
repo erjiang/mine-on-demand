@@ -27,6 +27,9 @@ files in this repo.
 You will need to get your AWS Access Key and Secret Key from the AWS console.
 
 1. Install HashiCorp Packer.
+1. Set your `AWS_ACCESS_KEY_ID` AND `AWS_SECRET_ACCESS_KEY` environment
+   variables to your AWS credentials. It needs to be an account that has enough
+   permissions to launch an EC2 instance and build an AMI.
 1. Go into the `ami/` directory.
 1. Run `packer build minecraft.json`.
 1. Remember the AMI ID ("ami-XXXXXXXX") that packer gives you at the end.
