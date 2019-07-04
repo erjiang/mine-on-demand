@@ -1,10 +1,10 @@
-# Mine-on-demand
+# Mine-on-Demand
 
-Pay for your minecraft server while you're using it, shut it down while you're
+Pay for your Minecraft server while you're using it, shut it down while you're
 not.
 
 This codebase includes a web page you can deploy on AWS Lambda, where users can
-log in and launch the minecraft server. The minecraft world is stored on an EBS
+log in and launch the Minecraft server. The Minecraft world is stored on an EBS
 volume that can be attached to new EC2 instances every time you want to play.
 When nobody is on the server for an hour, the server automatically shuts itself
 down.
@@ -22,29 +22,31 @@ California. If you don't want to deploy to us-west-1, then you will need to
 replace "us-west-1" with the name of your preferred region in all of the
 files in this repo.
 
-## Create serverless.yml
+## Getting Started
+
+### Create serverless.yml
 
 Copy `launch/serverless.example.yml` to `launch/serverless.yml`. You will be
 filling in the configuration values in that file as you go through the rest
 of the setup steps.
 
-## Building the AMI
+### Build the AMI
 
-You will need to get your AWS Access Key and Secret Key from the AWS console.
+You will need your AWS Access Key and Secret Key from the AWS console. (TODO: Add instructions for creating an IAM user with access key.)
 
-1. Install HashiCorp Packer.
+1. Install [HashiCorp Packer](https://www.packer.io/) on your local machine.
 1. Set your `AWS_ACCESS_KEY_ID` AND `AWS_SECRET_ACCESS_KEY` environment
    variables to your AWS credentials. It needs to be an account that has enough
    permissions to launch an EC2 instance and build an AMI.
-1. Go into the `ami/` directory.
-1. Run `packer build minecraft.json`.
+   See also https://www.packer.io/docs/builders/amazon.html
+1. Run `make ami` in the root directory of mine-on-demand.
 1. Put the AMI ID ("ami-XXXXXXXX") that packer gives you at the end into
    `serverless.yml`.
 
 This will create an AMI in us-west-1 that contains a minecraft server.
 
 
-## Creating your initial world volume
+### Create your initial world volume
 
 We need to create a BTRFS partition inside a new EBS volume to hold our world
 data.
@@ -74,7 +76,7 @@ in your world. Make sure that the partition is mounted by checking that
 data onto a volume that will be destroyed.
 1. Shut down your instance.
 
-## Set up AWS
+### Set up AWS
 
 There are a bunch of things that you need to set up once and include in the sls config.
 
@@ -95,7 +97,7 @@ from anywhere on port 25565 and for ICMP. Record the security group ID
 1. If you don't have one already, create a keypair for launching EC2
 instances. Remember the keypair name (e.g. "my-key-pair").
 
-## Create your Google API project
+### Create your Google API project
 
 You will need a Client ID for OAuth, which you can create in the credentials
 section of the Google API console. It will look like
@@ -110,7 +112,7 @@ REACT_APP_GOOGLE_CLIENT_ID=12345-blahblah12345.apps.googleusercontent.com
 
 You will also need to include it in your serverless.yml file.
 
-## Whitelist users
+### Whitelist users
 
 The website only allows Google accounts that are in the whitelist. There are
 two ways to configure the whitelist: a publicly accessible CSV file served over
@@ -120,7 +122,7 @@ HTTP, or an environment variable defined in your serverless.yml file.
 and launch the server. It does not control who can connect to the Minecraft
 server once it is launched.
 
-### CSV whitelist
+#### CSV whitelist
 
 By defining `USER_WHITELIST_CSV_URL` in your serverless.yml file, the app will
 check users logging in against that CSV file. The CSV file needs to be
@@ -144,7 +146,7 @@ This allows you to delegate control of the whitelist to multiple users via
 Google Drive. For example, you can let certain trusted friends add additional
 people to the whitelist.
 
-### Environment variable whitelist
+#### Environment variable whitelist
 
 The other way to set the whitelist is to define the `USER_WHITELIST`
 environment variable in your serverless.yml file. If you go this route, make
@@ -156,13 +158,13 @@ Here's an example of what you might write in your serverless.yml file:
 
     USER_WHITELIST: '["alice@example.com", "bob@example.com"]'
 
-## Building the frontend code
+### Build the frontend code
 
 1. Make sure you have a recent-ish version of npm and node.js.
 1. Double-check that you've created `.env.local` following the above steps.
 1. In the root directory, run `make frontend`.
 
-## Deploying the serverless website
+### Deploy the serverless website
 
 1. Install `sls`: https://serverless.com/framework/docs/providers/aws/guide/installation/
 1. Double check that you've replaced all the environment variables with the

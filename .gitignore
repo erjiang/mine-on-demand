@@ -5,6 +5,6 @@ ami/watchdog/include
 ami/watchdog/share
 launch/.serverless
 launch/node_modules
-launch/static/
+launch/static
 launch/serverless.yml
 launch/env.sh
