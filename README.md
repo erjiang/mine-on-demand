@@ -1,10 +1,10 @@
-# Mine-on-demand
+# Mine-on-Demand
 
-Pay for your minecraft server while you're using it, shut it down while you're
+Pay for your Minecraft server while you're using it, shut it down while you're
 not.
 
 This codebase includes a web page you can deploy on AWS Lambda, where users can
-log in and launch the minecraft server. The minecraft world is stored on an EBS
+log in and launch the Minecraft server. The Minecraft world is stored on an EBS
 volume that can be attached to new EC2 instances every time you want to play.
 When nobody is on the server for an hour, the server automatically shuts itself
 down.
@@ -22,19 +22,21 @@ California. If you don't want to deploy to us-west-1, then you will need to
 replace "us-west-1" with the name of your preferred region in all of the
 files in this repo.
 
-## Building the AMI
+## Getting Started
 
-You will need to get your AWS Access Key and Secret Key from the AWS console.
+### Step 1: Building the AMI
 
-1. Install HashiCorp Packer.
-1. Go into the `ami/` directory.
-1. Run `packer build minecraft.json`.
+You will need your AWS Access Key and Secret Key from the AWS console. (TODO: Add instructions for creating an IAM user with access key.)
+
+1. Install [HashiCorp Packer](https://www.packer.io/) on your local machine.
+1. https://www.packer.io/docs/builders/amazon.html
+1. In the `ami/` directory of this repo, run `packer build minecraft.json`.
 1. Remember the AMI ID ("ami-XXXXXXXX") that packer gives you at the end.
 
 This will create an AMI in us-west-1 that contains a minecraft server.
 
 
-## Creating your initial world volume
+## Step 2: Creating your initial world volume
 
 We need to create a BTRFS partition inside a new EBS volume to hold our world
 data.
