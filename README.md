@@ -29,7 +29,9 @@ files in this repo.
 You will need your AWS Access Key and Secret Key from the AWS console. (TODO: Add instructions for creating an IAM user with access key.)
 
 1. Install [HashiCorp Packer](https://www.packer.io/) on your local machine.
-1. https://www.packer.io/docs/builders/amazon.html
+1. Set your `AWS_ACCESS_KEY_ID` AND `AWS_SECRET_ACCESS_KEY` environment
+   variables to your AWS credentials. It needs to be an account that has enough
+   permissions to launch an EC2 instance and build an AMI. https://www.packer.io/docs/builders/amazon.html
 1. In the `ami/` directory of this repo, run `packer build minecraft.json`.
 1. Remember the AMI ID ("ami-XXXXXXXX") that packer gives you at the end.
 
@@ -100,6 +102,8 @@ You'll need to put this client ID in a file named `.env.local` inside the
 REACT_APP_GOOGLE_CLIENT_ID=12345-blahblah12345.apps.googleusercontent.com
 ```
 
+You will also need to include it in your serverless.yml file (see below).
+
 ## Whitelist users
 
 The website only allows Google accounts that are in the whitelist. There are
@@ -148,8 +152,8 @@ Here's an example of what you might write in your serverless.yml file:
 
 ## Deploying the serverless website
 
-1. Go into the `launch/` directory
 1. Install `sls`: https://serverless.com/framework/docs/providers/aws/guide/installation/
+1. Go into the `launch/` directory
 1. Copy `serverless.example.yml` to `serverless.yml`
 1. Replace all the environment variables with the actual IDs, options, etc.
 that you remembered from the above steps.
