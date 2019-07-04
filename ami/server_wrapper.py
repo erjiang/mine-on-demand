@@ -35,6 +35,9 @@ def run_minecraft():
 def main():
     run_minecraft()
 
+    # Allow other processes on this machine to send commands to the Minecraft
+    # server via XMLRPC. The automatic shutdown uses this to tell players on
+    # the server, for example.
     with SimpleXMLRPCServer(("localhost", 25560)) as server:
         server.register_function(run_command)
         server.serve_forever()
