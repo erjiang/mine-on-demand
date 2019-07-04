@@ -89,6 +89,13 @@ You will need a Client ID for OAuth, which you can create in the credentials
 section of the Google API console. It will look like
 "12345-blahblah12345.apps.googleusercontent.com".
 
+You'll need to put this client ID in a file named `.env.local` inside the
+`frontend` directory before you build, like so:
+
+```
+REACT_APP_GOOGLE_CLIENT_ID=12345-blahblah12345.apps.googleusercontent.com
+```
+
 ## Whitelist users
 
 The website only allows Google accounts that are in the whitelist. There are

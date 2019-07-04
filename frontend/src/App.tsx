@@ -22,6 +22,10 @@ class App extends React.Component<AppProps, AppState> {
       signedIn: false,
       isWilted: false,
     };
+
+    if (!process.env.REACT_APP_GOOGLE_CLIENT_ID) {
+      this.onError("Please set the Google client ID in your .env.local file.");
+    }
   }
 
   responseGoogle(response: any) {
@@ -90,7 +94,7 @@ class App extends React.Component<AppProps, AppState> {
     } else {
       loginForm = (
         <GoogleLogin
-          clientId="834173658994-kirouiivjlfkfecl2nemtu1q79d9p5u4.apps.googleusercontent.com"
+          clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ""}
           buttonText="Login with Google"
           onSuccess={(response) => this.responseGoogle(response)}
           onFailure={(response) => this.responseGoogle(response)}
