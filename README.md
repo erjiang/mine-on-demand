@@ -6,6 +6,8 @@ not.
 This codebase includes a web page you can deploy on AWS Lambda, where users can
 log in and launch the minecraft server. The minecraft world is stored on an EBS
 volume that can be attached to new EC2 instances every time you want to play.
+When nobody is on the server for an hour, the server automatically shuts itself
+down.
 
 ## License
 
