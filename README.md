@@ -22,6 +22,12 @@ California. If you don't want to deploy to us-west-1, then you will need to
 replace "us-west-1" with the name of your preferred region in all of the
 files in this repo.
 
+## Create serverless.yml
+
+Copy `launch/serverless.example.yml` to `launch/serverless.yml`. You will be
+filling in the configuration values in that file as you go through the rest
+of the setup steps.
+
 ## Building the AMI
 
 You will need to get your AWS Access Key and Secret Key from the AWS console.
@@ -32,7 +38,8 @@ You will need to get your AWS Access Key and Secret Key from the AWS console.
    permissions to launch an EC2 instance and build an AMI.
 1. Go into the `ami/` directory.
 1. Run `packer build minecraft.json`.
-1. Remember the AMI ID ("ami-XXXXXXXX") that packer gives you at the end.
+1. Put the AMI ID ("ami-XXXXXXXX") that packer gives you at the end into
+   `serverless.yml`.
 
 This will create an AMI in us-west-1 that contains a minecraft server.
 
@@ -44,7 +51,7 @@ data.
 
 1. Create a new EBS volume that's big enough to hold your Minecraft world
 data. You will pay per GB so don't create it too much bigger than your world.
-Remember the volume ID ("vol-XXXXXXXX").
+Record the volume ID ("vol-XXXXXXXX") in `serverless.yml`.
 1. Using this AMI that you just created, launch an instance (a t3.micro is fine).
 1. Go to the EBS volume you created and attach it to your instance.
 1. Log in to the EC2 instance and run `sudo parted`.
@@ -83,8 +90,8 @@ Remember the subnet ID ("subnet-XXXXXXXX")
     1. Go to the Subnet Associations tab and associate it with the subnet you
       just created.
 1. Create a security group for the Minecraft server. It needs to allow access
-from anywhere on port 25565 and for ICMP. Remember the security group ID
-("sg-XXXXXXXX")
+from anywhere on port 25565 and for ICMP. Record the security group ID
+("sg-XXXXXXXX") in `serverless.yml`.
 1. If you don't have one already, create a keypair for launching EC2
 instances. Remember the keypair name (e.g. "my-key-pair").
 
@@ -101,7 +108,7 @@ You'll need to put this client ID in a file named `.env.local` inside the
 REACT_APP_GOOGLE_CLIENT_ID=12345-blahblah12345.apps.googleusercontent.com
 ```
 
-You will also need to include it in your serverless.yml file (see below).
+You will also need to include it in your serverless.yml file.
 
 ## Whitelist users
 
@@ -149,13 +156,17 @@ Here's an example of what you might write in your serverless.yml file:
 
     USER_WHITELIST: '["alice@example.com", "bob@example.com"]'
 
+## Building the frontend code
+
+1. Make sure you have a recent-ish version of npm and node.js.
+1. Double-check that you've created `.env.local` following the above steps.
+1. In the root directory, run `make frontend`.
+
 ## Deploying the serverless website
 
 1. Install `sls`: https://serverless.com/framework/docs/providers/aws/guide/installation/
-1. Go into the `launch/` directory
-1. Copy `serverless.example.yml` to `serverless.yml`
-1. Replace all the environment variables with the actual IDs, options, etc.
-that you remembered from the above steps.
+1. Double check that you've replaced all the environment variables with the
+actual IDs, options, etc. in your `serverless.yml` file.
 1. Run `sls deploy`
 
 ## Updating/changing the Minecraft server version
