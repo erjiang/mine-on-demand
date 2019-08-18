@@ -5,9 +5,9 @@
 # symlink to the Minecraft world files.
 #
 
-# minecraft server 1.14.3 JAR
+# minecraft server 1.14.4 JAR
 # change this link to install a different package
-SERVER_URL=https://launcher.mojang.com/v1/objects/d0d0fe2b1dc6ab4c65554cb734270872b72dadd6/server.jar
+SERVER_URL=https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar
 
 # need to do this otherwise supervisor won't install properly
 # see https://github.com/hashicorp/terraform/issues/1025
