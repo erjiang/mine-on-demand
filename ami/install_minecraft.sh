@@ -4,10 +4,9 @@
 # run a Minecraft server on it. It also sets up /home/ubuntu/world to be a
 # symlink to the Minecraft world files.
 #
-
-# minecraft server 1.14.4 JAR
-# change this link to install a different package
-SERVER_URL=https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar
+# Note that it doesn't download the actual server JAR, because the latest
+# version is downloaded at server startup time. (See server_wrapper.py)
+#
 
 # need to do this otherwise supervisor won't install properly
 # see https://github.com/hashicorp/terraform/issues/1025
@@ -24,8 +23,6 @@ sudo apt upgrade
 sudo apt -y install openjdk-8-jre-headless supervisor python-virtualenv python-pip
 
 sudo apt clean
-
-curl -o /home/ubuntu/server.jar "$SERVER_URL"
 
 echo "eula=true" > /home/ubuntu/eula.txt
 

@@ -173,8 +173,5 @@ actual IDs, options, etc. in your `serverless.yml` file.
 
 ## Updating/changing the Minecraft server version
 
-The Minecraft server is downloaded and baked into the AMI. To change the server JAR:
-
-1. Get the URL of the server JAR that you want to use.
-1. In `ami/install_minecraft.sh`, change the URL near the top of the file.
-1. Run `make ami/MY_AMI` or `packer minecraft.json` to build the new AMI.
+The Minecraft server JAR should be automatically downloaded when the server is
+started. See `server_wrapper.py` for details.
