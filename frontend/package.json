@@ -7,7 +7,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-google-login": "^5.0.4",
-    "react-scripts": "^3.3.0",
+    "react-scripts": "^3.4.0",
     "typescript": "~3.4.5"
   },
   "scripts": {
