@@ -7,8 +7,9 @@ from xmlrpc.server import SimpleXMLRPCServer
 
 SERVER_FLAGS = [
     "-XX:+UseConcMarkSweepGC",
-    "-XX:+UseParNewGC",
-    "-XX:+CMSIncrementalPacing",
+    # next 2 options removed in later versions of openjdk
+    #"-XX:+UseParNewGC",
+    #"-XX:+CMSIncrementalPacing",
     "-XX:ParallelGCThreads=2",
     "-XX:+AggressiveOpts",
 ]
