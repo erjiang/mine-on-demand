@@ -20,14 +20,14 @@ sudo apt update
 
 sudo apt upgrade
 
-sudo apt -y install openjdk-11-jre-headless supervisor python-virtualenv python-pip
+sudo apt -y install openjdk-16-jre-headless supervisor python3-virtualenv python3-pip
 
 sudo apt clean
 
 echo "eula=true" > /home/ubuntu/eula.txt
 
 # symlink world to EBS volume
-echo '/dev/xvdf1 /home/ubuntu/world btrfs noatime,defaults 0 0' >> /etc/fstab
+sudo bash -c "echo '/dev/xvdf1 /home/ubuntu/world btrfs noatime,defaults 0 0' >> /etc/fstab"
 mkdir /home/ubuntu/world
 
 # move the supervisor conf file that packer previously uploaded to the right
