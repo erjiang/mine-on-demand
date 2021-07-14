@@ -27,7 +27,6 @@ sudo apt clean
 echo "eula=true" > /home/ubuntu/eula.txt
 
 # symlink world to EBS volume
-sudo bash -c "echo '/dev/xvdf1 /home/ubuntu/world btrfs noatime,defaults 0 0' >> /etc/fstab"
 mkdir /home/ubuntu/world
 
 # move the supervisor conf file that packer previously uploaded to the right
