@@ -20,7 +20,7 @@ sudo apt update
 
 sudo apt upgrade
 
-sudo apt -y install openjdk-8-jre-headless supervisor python-virtualenv python-pip
+sudo apt -y install openjdk-11-jre-headless supervisor python-virtualenv python-pip
 
 sudo apt clean
 
