@@ -6,12 +6,13 @@ from xmlrpc.server import SimpleXMLRPCServer
 # This should be run in the /home/ubuntu directory
 
 SERVER_FLAGS = [
-    "-XX:+UseConcMarkSweepGC",
-    # next 2 options removed in later versions of openjdk
+    # TODO: figure out what options are helpful
+    # The below options have mostly been removed from openjdk
+    #"-XX:+UseConcMarkSweepGC",
     #"-XX:+UseParNewGC",
     #"-XX:+CMSIncrementalPacing",
-    "-XX:ParallelGCThreads=2",
-    "-XX:+AggressiveOpts",
+    #"-XX:ParallelGCThreads=2",
+    #"-XX:+AggressiveOpts",
 ]
 
 SERVER_JAR_PATH = "/home/ubuntu/server.jar"
