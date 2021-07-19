@@ -12,7 +12,7 @@ while [[ -z "$DEVICE_NAME" ]]; do
 done
 
 echo $(date -u) "Mounting BTRFS volume"
-sudo mount "$DEVICE_NAME" /home/ubuntu/world -o defaults,noatime
+sudo mount /dev/"$DEVICE_NAME" /home/ubuntu/world -o defaults,noatime
 
 ln -s /home/ubuntu/world/ops.json /home/ubuntu/ops.json
 
